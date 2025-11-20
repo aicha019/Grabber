@@ -2,8 +2,6 @@
 
 dir='/home/aichac/workspace/grabber'
 
-> $dir/output/global.log
-
 echo $(date +%d.%m.%Y) >> $dir/output/global.log
 
 echo "---HOSTNAME---" >> $dir/output/global.log
