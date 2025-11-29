@@ -1,21 +1,333 @@
-27.11.2025
-6.12.43+deb13-amd64 x86_64
+29.11.2025
+
+
+---- HOSTNAME ----
+---- HOSTNAME ----
 aicha-20b7s0jc0v
-----  BIOS VERSION  ----
-CPU: dual core Intel Core i5-4300U (-MT MCP-) speed/min/max: 1896/800/2900 MHz
-----  CPU Temp  ----
-/dev/sda1          300M    7,0M  293M   3% /boot/efi
+aicha-20b7s0jc0v
+
+
+---- BIOS VERSION ----
+---- BIOS VERSION ----
+---- INFO CPU ----
+---- INFO CPU ----
+12CPU:
+12CPU:
+---- KERNEL INFOS ----
+---- KERNEL INFOS ----
+6.12.43+deb13-amd64 x86_64
+6.12.43+deb13-amd64 x86_64
+
+
+---- INFOS ----
+---- INFOS ----
+               total       utilisé      libre     partagé tamp/cache   disponible
+Mem:           7,6Gi       3,3Gi       2,7Gi       281Mi       2,2Gi       4,3Gi
 Échange:       8,8Gi          0B       8,8Gi
-----  END  ----
-----  HOSTNAME  ----
-----  INFO CPU  ----
-----  INFOS  ----
-----  KERNEL INFOS  ----
-Mem:           7,6Gi       2,3Gi       3,8Gi       284Mi       2,1Gi       5,3Gi
+               total       utilisé      libre     partagé tamp/cache   disponible
+Mem:           7,6Gi       3,3Gi       2,7Gi       281Mi       2,2Gi       4,3Gi
+Échange:       8,8Gi          0B       8,8Gi
 NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
-Package id 0:  +58.0°C  (high = +100.0°C, crit = +100.0°C)
+sda      8:0    0 119,2G  0 disk 
 ├─sda1   8:1    0   300M  0 part /boot/efi
 ├─sda2   8:2    0 110,1G  0 part /
 └─sda3   8:3    0   8,8G  0 part [SWAP]
+NAME   MAJ:MIN RM   SIZE RO TYPE MOUNTPOINTS
 sda      8:0    0 119,2G  0 disk 
-               total       utilisé      libre     partagé tamp/cache   disponible
+├─sda1   8:1    0   300M  0 part /boot/efi
+├─sda2   8:2    0 110,1G  0 part /
+└─sda3   8:3    0   8,8G  0 part [SWAP]
+
+---- CPU Temp ----
+
+---- CPU Temp ----
+Package id 0:  +50.0°C  (high = +100.0°C, crit = +100.0°C)
+
+Package id 0:  +50.0°C  (high = +100.0°C, crit = +100.0°C)
+
+--- LISTE DEVICES ---
+sda
+
+--- LISTE DEVICES ---
+---- CONTENU DES FICHIERS ----
+sda
+---- FICHIER : /etc/passwd ----
+
+---- CONTENU DES FICHIERS ----
+---- FICHIER : /etc/passwd ----
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+dhcpcd:x:100:65534:DHCP Client Daemon:/usr/lib/dhcpcd:/bin/false
+tss:x:101:103:TPM software stack:/var/lib/tpm:/bin/false
+uuidd:x:102:104::/run/uuidd:/usr/sbin/nologin
+messagebus:x:991:991:System Message Bus:/nonexistent:/usr/sbin/nologin
+dnsmasq:x:999:65534:dnsmasq:/var/lib/misc:/usr/sbin/nologin
+avahi:x:103:109:Avahi mDNS daemon:/run/avahi-daemon:/usr/sbin/nologin
+speech-dispatcher:x:104:29:Speech Dispatcher:/run/speech-dispatcher:/bin/false
+usbmux:x:105:46:usbmux daemon:/var/lib/usbmux:/usr/sbin/nologin
+cups-pk-helper:x:106:110:user for cups-pk-helper service:/nonexistent:/usr/sbin/nologin
+fwupd-refresh:x:990:990:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+geoclue:x:107:112::/var/lib/geoclue:/usr/sbin/nologin
+gnome-remote-desktop:x:989:989:GNOME Remote Desktop:/var/lib/gnome-remote-desktop:/usr/sbin/nologin
+saned:x:108:113::/var/lib/saned:/usr/sbin/nologin
+polkitd:x:988:988:User for polkitd:/:/usr/sbin/nologin
+rtkit:x:109:114:RealtimeKit:/proc:/usr/sbin/nologin
+colord:x:110:115:colord colour management daemon:/var/lib/colord:/usr/sbin/nologin
+gnome-initial-setup:x:111:65534::/run/gnome-initial-setup/:/bin/false
+Debian-gdm:x:112:116:Gnome Display Manager:/var/lib/gdm3:/bin/false
+aichac:x:1000:1000:aicha.cnam:/home/aichac:/bin/bash
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/run/ircd:/usr/sbin/nologin
+_apt:x:42:65534::/nonexistent:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+systemd-network:x:998:998:systemd Network Management:/:/usr/sbin/nologin
+dhcpcd:x:100:65534:DHCP Client Daemon:/usr/lib/dhcpcd:/bin/false
+tss:x:101:103:TPM software stack:/var/lib/tpm:/bin/false
+uuidd:x:102:104::/run/uuidd:/usr/sbin/nologin
+messagebus:x:991:991:System Message Bus:/nonexistent:/usr/sbin/nologin
+dnsmasq:x:999:65534:dnsmasq:/var/lib/misc:/usr/sbin/nologin
+avahi:x:103:109:Avahi mDNS daemon:/run/avahi-daemon:/usr/sbin/nologin
+speech-dispatcher:x:104:29:Speech Dispatcher:/run/speech-dispatcher:/bin/false
+usbmux:x:105:46:usbmux daemon:/var/lib/usbmux:/usr/sbin/nologin
+cups-pk-helper:x:106:110:user for cups-pk-helper service:/nonexistent:/usr/sbin/nologin
+fwupd-refresh:x:990:990:Firmware update daemon:/var/lib/fwupd:/usr/sbin/nologin
+geoclue:x:107:112::/var/lib/geoclue:/usr/sbin/nologin
+gnome-remote-desktop:x:989:989:GNOME Remote Desktop:/var/lib/gnome-remote-desktop:/usr/sbin/nologin
+saned:x:108:113::/var/lib/saned:/usr/sbin/nologin
+polkitd:x:988:988:User for polkitd:/:/usr/sbin/nologin
+rtkit:x:109:114:RealtimeKit:/proc:/usr/sbin/nologin
+colord:x:110:115:colord colour management daemon:/var/lib/colord:/usr/sbin/nologin
+gnome-initial-setup:x:111:65534::/run/gnome-initial-setup/:/bin/false
+Debian-gdm:x:112:116:Gnome Display Manager:/var/lib/gdm3:/bin/false
+aichac:x:1000:1000:aicha.cnam:/home/aichac:/bin/bash
+
+---- FICHIER : /etc/group ----
+
+---- FICHIER : /etc/group ----
+root:x:0:
+daemon:x:1:
+bin:x:2:
+sys:x:3:
+adm:x:4:
+tty:x:5:
+disk:x:6:
+lp:x:7:
+mail:x:8:
+news:x:9:
+uucp:x:10:
+man:x:12:
+proxy:x:13:
+kmem:x:15:
+dialout:x:20:
+fax:x:21:
+voice:x:22:
+cdrom:x:24:aichac
+floppy:x:25:aichac
+tape:x:26:
+sudo:x:27:aichac
+audio:x:29:aichac
+dip:x:30:aichac
+www-data:x:33:
+backup:x:34:
+operator:x:37:
+list:x:38:
+irc:x:39:
+src:x:40:
+shadow:x:42:
+utmp:x:43:
+video:x:44:aichac
+sasl:x:45:
+plugdev:x:46:aichac
+staff:x:50:
+games:x:60:
+users:x:100:
+nogroup:x:65534:
+systemd-journal:x:999:
+systemd-network:x:998:
+crontab:x:997:
+input:x:996:aichac
+sgx:x:995:
+clock:x:994:
+kvm:x:993:
+render:x:992:
+netdev:x:101:aichac
+scanner:x:102:saned,aichac
+tss:x:103:
+uuidd:x:104:
+messagebus:x:991:
+_ssh:x:105:
+ssl-cert:x:106:
+i2c:x:107:
+bluetooth:x:108:aichac
+avahi:x:109:
+lpadmin:x:110:aichac
+pipewire:x:111:
+fwupd-refresh:x:990:
+geoclue:x:112:
+gnome-remote-desktop:x:989:
+saned:x:113:
+polkitd:x:988:
+rtkit:x:114:
+colord:x:115:
+Debian-gdm:x:116:
+aichac:x:1000:
+gnome-initial-setup:x:987:
+docker:x:986:
+
+root:x:0:
+daemon:x:1:
+bin:x:2:
+sys:x:3:
+adm:x:4:
+tty:x:5:
+disk:x:6:
+lp:x:7:
+mail:x:8:
+news:x:9:
+uucp:x:10:
+man:x:12:
+proxy:x:13:
+kmem:x:15:
+dialout:x:20:
+fax:x:21:
+voice:x:22:
+cdrom:x:24:aichac
+floppy:x:25:aichac
+tape:x:26:
+sudo:x:27:aichac
+audio:x:29:aichac
+dip:x:30:aichac
+www-data:x:33:
+backup:x:34:
+operator:x:37:
+list:x:38:
+irc:x:39:
+src:x:40:
+shadow:x:42:
+utmp:x:43:
+video:x:44:aichac
+sasl:x:45:
+plugdev:x:46:aichac
+staff:x:50:
+games:x:60:
+users:x:100:
+nogroup:x:65534:
+systemd-journal:x:999:
+systemd-network:x:998:
+crontab:x:997:
+input:x:996:aichac
+sgx:x:995:
+clock:x:994:
+kvm:x:993:
+render:x:992:
+netdev:x:101:aichac
+scanner:x:102:saned,aichac
+tss:x:103:
+uuidd:x:104:
+messagebus:x:991:
+_ssh:x:105:
+ssl-cert:x:106:
+i2c:x:107:
+bluetooth:x:108:aichac
+avahi:x:109:
+lpadmin:x:110:aichac
+pipewire:x:111:
+fwupd-refresh:x:990:
+geoclue:x:112:
+gnome-remote-desktop:x:989:
+saned:x:113:
+polkitd:x:988:
+rtkit:x:114:
+colord:x:115:
+Debian-gdm:x:116:
+aichac:x:1000:
+gnome-initial-setup:x:987:
+docker:x:986:
+---- FICHIER : /etc/apt/sources.list* ----
+
+---- FICHIER : /etc/apt/sources.list* ----
+# See https://wiki.debian.org/SourcesList for more information.
+deb http://deb.debian.org/debian trixie main non-free-firmware
+deb-src http://deb.debian.org/debian trixie main non-free-firmware
+
+deb http://deb.debian.org/debian trixie-updates main non-free-firmware
+deb-src http://deb.debian.org/debian trixie-updates main non-free-firmware
+
+deb http://security.debian.org/debian-security/ trixie-security main non-free-firmware
+deb-src http://security.debian.org/debian-security/ trixie-security main non-free-firmware
+
+# Backports allow you to install newer versions of software made available for this release
+deb http://deb.debian.org/debian trixie-backports main non-free-firmware
+deb-src http://deb.debian.org/debian trixie-backports main non-free-firmware
+# See https://wiki.debian.org/SourcesList for more information.
+deb http://deb.debian.org/debian trixie main non-free-firmware
+deb-src http://deb.debian.org/debian trixie main non-free-firmware
+
+deb http://deb.debian.org/debian trixie-updates main non-free-firmware
+deb-src http://deb.debian.org/debian trixie-updates main non-free-firmware
+
+deb http://security.debian.org/debian-security/ trixie-security main non-free-firmware
+deb-src http://security.debian.org/debian-security/ trixie-security main non-free-firmware
+
+# Backports allow you to install newer versions of software made available for this release
+deb http://deb.debian.org/debian trixie-backports main non-free-firmware
+deb-src http://deb.debian.org/debian trixie-backports main non-free-firmware
+# See https://wiki.debian.org/SourcesList for more information.
+deb http://deb.debian.org/debian trixie main non-free-firmware
+deb-src http://deb.debian.org/debian trixie main non-free-firmware
+
+deb http://deb.debian.org/debian trixie-updates main non-free-firmware
+deb-src http://deb.debian.org/debian trixie-updates main non-free-firmware
+
+deb http://security.debian.org/debian-security/ trixie-security main non-free-firmware
+deb-src http://security.debian.org/debian-security/ trixie-security main non-free-firmware
+
+# Backports allow you to install newer versions of software made available for this release
+deb http://deb.debian.org/debian trixie-backports main non-free-firmware
+deb-src http://deb.debian.org/debian trixie-backports main non-free-firmware
+# See https://wiki.debian.org/SourcesList for more information.
+deb http://deb.debian.org/debian trixie main non-free-firmware
+deb-src http://deb.debian.org/debian trixie main non-free-firmware
+
+deb http://deb.debian.org/debian trixie-updates main non-free-firmware
+deb-src http://deb.debian.org/debian trixie-updates main non-free-firmware
+
+deb http://security.debian.org/debian-security/ trixie-security main non-free-firmware
+deb-src http://security.debian.org/debian-security/ trixie-security main non-free-firmware
+
+# Backports allow you to install newer versions of software made available for this release
+deb http://deb.debian.org/debian trixie-backports main non-free-firmware
+deb-src http://deb.debian.org/debian trixie-backports main non-free-firmware
+
+
