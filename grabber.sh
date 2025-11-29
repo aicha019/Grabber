@@ -1,31 +1,53 @@
 #!/bin/bash
 
-dir='/home/aichac/workspace/grabber'
+dir="/home/aichac/workspace/grabber"
+log="$dir/output/global.log"
 
-echo $(date +%d.%m.%Y) > $dir/output/global.log
+ecrire() {
+    echo "$1" >> "$log"
+}
 
-echo "---- HOSTNAME ----" >> $dir/output/global.log
-hostname | cut -d"." -f1 >> $dir/output/global.log
+if [ $EUID -ne 1000 ]; then
+    echo "Erreur : UID != 1000"
+    exit 1
+fi
 
-echo "---- BIOS VERSION ----" >> $dir/output/global.log
-sudo dmidecode -t bios | grep Version | head -n3 >> $dir/output/global.log
+echo $(date +%d.%m.%Y) > "$log"
+echo "" >> "$log"
 
-echo "---- INFO CPU ----" >> $dir/output/global.log
-inxi -c | grep CPU >> $dir/output/global.log
+echo "---- HOSTNAME ----" >> "$log"
+hostname | cut -d'.' -f1 >> "$log"
+echo "" >> "$log"
 
-echo "---- KERNEL INFOS ----" >> $dir/output/global.log
-uname -mr >> $dir/output/global.log
+echo "---- BIOS VERSION ----" >> "$log"
+sudo dmidecode -t bios | grep Version | head -n3 >> "$log"
 
-echo "---- INFOS ----" >> $dir/output/global.log
-free -h >> $dir/output/global.log
-lsblk >> $dir/output/global.log
-df -h | grep /dev/sda1/ >> $dir/output/global.log
+echo "---- INFO CPU ----" >> "$log"
+inxi -c | grep CPU >> "$log"
 
-echo "---- CPU Temp ----" >> $dir/output/global.log
-sensors | grep Package >> $dir/output/global.log
+echo "---- KERNEL INFOS ----" >> "$log"
+uname -mr >> "$log"
+echo "" >> "$log"
+
+echo "---- INFOS ----" >> "$log"
+free -h >> "$log"
+lsblk | grep -v loop >> "$log"
+df -h | grep /dev/sda1/ >> "$log"
+echo "" >> "$log"
+
+echo "---- CPU Temp ----" >> "$log"
+sensors | grep Package >> "$log"
+echo "" >> "$log"
 
 declare -a DEVICES 
-mapfile -t DEVICES < <(lsblk -dn -o NAME |grep -v loop)
+mapfile -t DEVICES < <(lsblk -dn -o NAME | grep -v loop)
+
+echo "--- LISTE DEVICES ---" >> "$log"
+for d in "${DEVICES[@]}"; do
+    echo "$d" >> "$log"
+done
+echo "" >> "$log"
+
 
 declare -A FILES
 FILES=(
@@ -34,9 +56,12 @@ FILES=(
 	["group.file"]="/etc/group"
 )
 
+echo "---- CONTENU DES FICHIERS ----" >> "$log"
+for key in "${!FILES[@]}"; do
+    echo "---- FICHIER : ${FILES[$key]} ----" >> "$log"
+    cat ${FILES[$key]} >> "$log"
+    echo "" >> "$log"
+done
 
-for i in ${!DEVICES[@]}; do
-   echo "${DEVICES[$i]}" >> $dir/output/global.log 
-done 
+echo "---- END ----" >> >> "$log"
 
-echo "---- END ----" >> $dir/output/global.log
