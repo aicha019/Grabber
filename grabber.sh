@@ -23,7 +23,7 @@ echo "---- BIOS VERSION ----" >> "$log"
 sudo dmidecode -t bios | grep Version | head -n3 >> "$log"
 
 echo "---- INFO CPU ----" >> "$log"
-inxi -c | grep CPU >> "$log"
+inxi -C | grep CPU >> "$log"
 
 echo "---- KERNEL INFOS ----" >> "$log"
 uname -mr >> "$log"
