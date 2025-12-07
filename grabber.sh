@@ -1,67 +1,132 @@
 #!/bin/bash
 
-dir="/home/aichac/workspace/grabber"
-log="$dir/output/global.log"
+# ====================================================================
+# CONFIGURATION
+# ====================================================================
+DIR="/home/aichac/workspace/grabber"
 
+# Réinitialisation du log
+DATE=$(date '+%d%m%Y')
+JOURNAL="$DIR/output/journal$DATE.log" 
+
+echo "$(date '+%Y-%m-%d %H:%M:%S')" > "$JOURNAL"
+echo "" >> "$JOURNAL"
+
+# Fonction helper pour écrire dans le log
 ecrire() {
-    echo "$1" >> "$log"
+    echo "$1" >> "$JOURNAL"
 }
 
-if [ $EUID -ne 1000 ]; then
-    echo "Erreur : UID != 1000"
-    exit 1
+# ======================================
+# HOSTNAME
+# ======================================
+ecrire "[HOSTNAME]"
+HOSTNAME=$(hostname)
+ecrire "HOSTNAME=$HOSTNAME"
+ecrire ""
+
+
+# ======================================
+# HARDWARE
+# ======================================
+ecrire "[HARDWARE]"
+
+# CPU Info
+CPU_MODEL=$(lscpu | grep -i 'Model name\|Nom de modèle' | cut -d: -f2 | xargs)
+CPU_CORES=$(lscpu | grep -i 'Core(s) per socket\|Cœur(s) par socket' | awk '{print $4}')
+CPU_THREADS=$(lscpu | grep -i 'Thread(s) per core\|Thread(s) par cœur' | awk '{print $4}')
+CPU_SERIAL=$(sudo dmidecode -t processor 2>/dev/null | grep -i ID | head -n1 | awk '{print $3}')
+
+ecrire "CPU_MODEL=$CPU_MODEL"
+ecrire "CPU_CORES=$CPU_CORES"
+ecrire "CPU_THREADS=$CPU_THREADS"
+ecrire "CPU_SERIAL=${CPU_SERIAL:-}"
+ecrire ""
+
+# RAM
+RAM_TOTAL=$(free -h | awk '/^Mem:/ {print $2}')
+RAM_USED=$(free -h | awk '/^Mem:/ {print $3}')
+ecrire "RAM_TOTAL=$RAM_TOTAL"
+ecrire "RAM_USED=$RAM_USED"
+ecrire ""
+
+# SWAP
+SWAP_TOTAL=$(free -h | awk '/^Swap:/ {print $2}')
+SWAP_USED=$(free -h | awk '/^Swap:/ {print $3}')
+ecrire "SWAP_TOTAL=$SWAP_TOTAL"
+ecrire "SWAP_USED=$SWAP_USED"
+ecrire ""
+
+# Disk
+DISK_TOTAL=$(df -h / | awk 'NR==2 {print $2}')
+DISK_USED=$(df -h / | awk 'NR==2 {print $3}')
+ecrire "DISK_TOTAL=$DISK_TOTAL"
+ecrire "DISK_USED=$DISK_USED"
+ecrire ""
+
+# Temperature
+TEMP_FILE="/sys/class/thermal/thermal_zone0/temp"
+if [ -f "$TEMP_FILE" ]; then
+    TEMPERATURE=$(awk '{printf "%.1f°C\n", $1/1000}' "$TEMP_FILE")
+else
+    TEMPERATURE="Unavailable on virtual machines"
 fi
+ecrire "TEMPERATURE=$TEMPERATURE"
+ecrire ""
 
-echo $(date +%d.%m.%Y) > "$log"
-echo "" >> "$log"
+# Network Interfaces
+ecrire "INTERFACES="
+ip -o link show | awk -F': ' '{print $2}' >> "$JOURNAL"
+ecrire ""
 
-echo "---- HOSTNAME ----" >> "$log"
-hostname | cut -d'.' -f1 >> "$log"
-echo "" >> "$log"
+IPV4=$(ip -4 addr show | grep inet | grep -v '127.0.0.1' | awk '{print $2}' | head -n1)
+ROUTING=$(ip route show | head -n1)
+ecrire "IPV4=$IPV4"
+ecrire "ROUTING=$ROUTING"
+ecrire ""
 
-echo "---- BIOS VERSION ----" >> "$log"
-sudo dmidecode -t bios | grep Version | head -n3 >> "$log"
+# ======================================
+# SOFTWARE
+# ======================================
+ecrire ""
+ecrire "[SOFTWARE]"
 
-echo "---- INFO CPU ----" >> "$log"
-inxi -C | grep CPU >> "$log"
+OS=$(grep '^PRETTY_NAME=' /etc/os-release 2>/dev/null | cut -d '=' -f2 | tr -d '"')
+KERNEL=$(uname -r)
+ecrire "OS=$OS"
+ecrire "KERNEL=$KERNEL"
 
-echo "---- KERNEL INFOS ----" >> "$log"
-uname -mr >> "$log"
-echo "" >> "$log"
+# Packages
+ecrire "PACKAGES_INSTALLED="
+apt list --installed 2>/dev/null >> "$JOURNAL"
+ecrire ""
 
-echo "---- INFOS ----" >> "$log"
-free -h >> "$log"
-lsblk | grep -v loop >> "$log"
-df -h | grep /dev/sda1/ >> "$log"
-echo "" >> "$log"
+SNAP_COUNT=$(snap list 2>/dev/null | wc -l)
+FLATPAK_COUNT=$(flatpak list 2>/dev/null | wc -l)
+ecrire "SNAP_PACKAGES=$SNAP_COUNT"
+ecrire "FLATPAK_PACKAGES=$FLATPAK_COUNT"
+ecrire ""
 
-echo "---- CPU Temp ----" >> "$log"
-sensors | grep Package >> "$log"
-echo "" >> "$log"
+# ======================================
+# CONFIG
+# ======================================
+ecrire "[CONFIG]"
 
-declare -a DEVICES 
-mapfile -t DEVICES < <(lsblk -dn -o NAME | grep -v loop)
+ecrire "SOURCES.LIST="
+grep -v '^#' /etc/apt/sources.list* 2>/dev/null >> "$JOURNAL"
+ecrire ""
 
-echo "--- LISTE DEVICES ---" >> "$log"
-for d in "${DEVICES[@]}"; do
-    echo "$d" >> "$log"
-done
-echo "" >> "$log"
+ecrire "FSTAB="
+grep -v '^#' /etc/fstab 2>/dev/null >> "$JOURNAL"
+ecrire ""
 
+ecrire "CRONTAB="
+crontab -l 2>/dev/null | grep grabber.sh >> "$JOURNAL"
+ecrire ""
 
-declare -A FILES
-FILES=(
-	["sources_list.file"]="/etc/apt/sources.list*"
-	["passwd.file"]="/etc/passwd"
-	["group.file"]="/etc/group"
-)
-
-echo "---- CONTENU DES FICHIERS ----" >> "$log"
-for key in "${!FILES[@]}"; do
-    echo "---- FICHIER : ${FILES[$key]} ----" >> "$log"
-    cat ${FILES[$key]} >> "$log"
-    echo "" >> "$log"
-done
-
-echo "---- END ----" >> >> "$log"
+# ======================================
+# END
+# ======================================
+ecrire ""
+ecrire "[END]"
 
