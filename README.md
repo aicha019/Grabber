@@ -1,7 +1,7 @@
 # Grabber – Script de collecte d’informations système
 
 **Auteur :** Aïcha Fofana  
-**Contact :** aicha.fofana4.auditeur@lecnam.net  
+**Contact :** aichafofana019@gmil.com 
 **Étudiante en DSP DevOps – CNAM**
 
 ---
