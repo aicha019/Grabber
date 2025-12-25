@@ -25,11 +25,14 @@
 #   - droits d’écriture dans /var/log/grabber
 #
 # ============================================================
+export LC_ALL=C
+export LANG=C
 
 # Vérification des droits root
+
 if [ "$EUID" -ne 0 ]; then
     echo "[ERREUR] Le script s'éxécute qu'avec sudo "
-    echo "👉 Utilise : sudo ./grabber.sh"
+    echo " Utilise : sudo ./grabber.sh"
     exit 1
 fi
 
@@ -85,35 +88,32 @@ for c in "${!CMD[@]}"; do
 done
 
 # ====================== HARDWARE ==========================
+CPU=$(lscpu | grep "Model name" | head -n1 | cut -d':' -f2 | sed 's/^ *//;s/ *$//')
+CPU_CORES_NUMBER=$(lscpu | grep "Core(s) per socket" | head -n1 | awk '{print $4}')
+CPU_THREADS_NUMBER=$(nproc)
+CPU_FREQUENCY_MIN=$(lscpu | grep "CPU min MHz" | head -n1 | awk '{print $4}')
+CPU_FREQUENCY_MAX=$(lscpu | grep "CPU max MHz" | head -n1 | awk '{print $4}')
+CPU_FREQUENCY_CUR=$(awk -F: '/cpu MHz/ {print $2; exit}' /proc/cpuinfo | sed 's/^ *//;s/ *$//')
 
-CPU=$(grep -m 1 "model name" /proc/cpuinfo | cut -d':' -f2 | sed 's/^ //')
-CPU_CORES_NUMBER=$(nproc --all)
-CPU_THREADS_NUMBER=$(grep -c ^processor /proc/cpuinfo)
+GPU_MODEL=$(lspci | grep -i 'vga\|3d' | cut -d':' -f3- | head -n1 | sed 's/^ //')
+GPU_MEMORY=$(free -h | awk '/Mem:/ {print $2}') 
 
-CPU_FREQUENCY_CUR=$(awk -F: '/cpu MHz/ {print $2; exit}' /proc/cpuinfo | sed 's/^ //')
-CPU_FREQUENCY_MIN="$CPU_FREQUENCY_CUR"
-CPU_FREQUENCY_MAX="$CPU_FREQUENCY_CUR"
-
-GPU_MODEL=$(lspci | awk -F': ' '/VGA|3D/ {print $2}')
-[[ -z "$GPU_MODEL" ]] && GPU_MODEL="Unknown GPU"
-
-GPU_MEMORY= #??
-
-
-MB_SERIAL=$(sudo dmidecode -s baseboard-serial-number 2>/dev/null)
-[[ -z "$MB_SERIAL" ]] && MB_SERIAL="Unknown"
+MB_SERIAL=$(cat /sys/class/dmi/id/board_serial 2>/dev/null)
+[[ -z "$MB_SERIAL" ]] && MB_SERIAL="Not provided"
 
 RAM=$(free -h | awk '/Mem:/ {print $2}')
-
 RAM_NUMBER=$(sudo dmidecode -t memory 2>/dev/null | grep "Size:" | grep -v "No Module Installed" | wc -l)
 RAM_SLOTS_NUMBER=$(sudo dmidecode -t memory 2>/dev/null | grep -c "Memory Device")
-
 RAM_O_SIZE=$(sudo dmidecode -t memory 2>/dev/null | grep "Size:" | grep -v "No Module Installed" | awk -F': ' '{print $2}' | tr '\n' ',' | sed 's/,$//')
 RAM_O_FREQUENCE=$(sudo dmidecode -t memory 2>/dev/null | grep "Speed:" | grep -v "Unknown" | awk -F': ' '{print $2}' | tr '\n' ',' | sed 's/,$//')
 RAM_O_SLOTS=$(sudo dmidecode -t memory 2>/dev/null | grep "Locator:" | awk -F': ' '{print $2}' | tr '\n' ',' | sed 's/,$//')
 
-DISK=$(lsblk -dn -o SIZE | head -n1)
+
+
+DISK=$(lsblk -dn -o SIZE /dev/sda)
 DISK_NUMBER=$(lsblk -dn -o NAME | wc -l)
+DISK_USED=$(df -h / | awk 'NR==2 {print $3}')
+DISK_AVAILABLE=$(df -h / | awk 'NR==2 {print $4}')
 
 
 # ====================== SOFTWARE ==========================
@@ -126,12 +126,12 @@ DNS=$(grep -E "nameserver" /etc/resolv.conf | tr '\n' ';')
 
 echo "[HARDWARE]" > "$SUM"
 
-echo "CPU=$CPU" >> "$SUM"
+echo "CPU=$(echo $CPU | sed 's/^[ \t]*//')" >> "$SUM"
 echo "CPU_CORES_NUMBER=$CPU_CORES_NUMBER" >> "$SUM"
 echo "CPU_THREADS_NUMBER=$CPU_THREADS_NUMBER" >> "$SUM"
-echo "CPU_FREQUENCY_MIN=$CPU_FREQUENCY_MIN" >> "$SUM"
-echo "CPU_FREQUENCY_MAX=$CPU_FREQUENCY_MAX" >> "$SUM"
-echo "CPU_FREQUENCY_CUR=$CPU_FREQUENCY_CUR" >> "$SUM"
+echo "CPU_FREQUENCY_MIN=$(echo $CPU_FREQUENCY_MIN | sed 's/^ *//;s/ *$//')" >> "$SUM"
+echo "CPU_FREQUENCY_MAX=$(echo $CPU_FREQUENCY_MAX | sed 's/^ *//;s/ *$//')" >> "$SUM"
+echo "CPU_FREQUENCY_CUR=$(echo $CPU_FREQUENCY_CUR | sed 's/^ *//;s/ *$//')" >> "$SUM"
 
 echo "MB_SERIAL=$MB_SERIAL" >> "$SUM"
 echo "GPU_MODEL=$GPU_MODEL" >> "$SUM"
@@ -148,6 +148,8 @@ echo "" >> "$SUM"
 
 echo "DISK=$DISK" >> "$SUM"
 echo "DISK_NUMBER=$DISK_NUMBER" >> "$SUM"
+echo "DISK1_USED=$DISK_USED" >> "$SUM"
+echo "DISK1_AVAILABLE=$DISK_AVAILABLE" >> "$SUM"
 
 i=1
 for disk in $(lsblk -dn -o NAME); do
@@ -180,4 +182,4 @@ echo "DNS=$DNS" >> "$SUM"
 
 echo "" >> "$SUM"
 
-echo "====================== The end, bye ====================== " | tee -a "$SUCCESS_LOG"
+echo "====================== The end, byeee ====================== " | tee -a "$SUCCESS_LOG"
