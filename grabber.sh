@@ -121,6 +121,7 @@ DISK_AVAILABLE=$(df -h / | awk 'NR==2 {print $4}')
 OS=$(lsb_release -d 2>/dev/null | cut -f2)
 KERNEL=$(uname -r)
 DNS=$(grep -E "nameserver" /etc/resolv.conf | tr '\n' ';')
+HOSTNAME=$(hostname)
 
 # ====================== SUMMARY ==========================
 
@@ -183,3 +184,58 @@ echo "DNS=$DNS" >> "$SUM"
 echo "" >> "$SUM"
 
 echo "====================== The end, byeee ====================== " | tee -a "$SUCCESS_LOG"
+
+#SIMPLE LOCAL
+ 
+# construire le json 
+json_data=$(jq -n \
+  --arg host "$HOSTNAME" \
+  --arg cpu "$CPU" \
+  --arg mem "$MEM" \
+  --arg os "$OS" \
+  --arg cpu_cores_number "$CPU_CORES_NUMBER" \
+  --arg cpu_threads_number "$CPU_THREADS_NUMBER" \
+  --arg cpu_frequency_min "$CPU_FREQUENCY_MIN" \
+  --arg cpu_frequency_max "$CPU_FREQUENCY_MAX" \
+  --arg cpu_frequency_cur "$CPU_FREQUENCY_CUR" \
+  --arg gpu_model "$GPU_MODEL" \
+  --arg gpu_memory "$GPU_MEMORY" \
+  --arg mb_serial "$MB_SERIAL" \
+  --arg ram "$RAM" \
+  --arg ram_number "$RAM_NUMBER" \
+  --arg kernel "$KERNEL" \
+  --arg ram_slots_number "$RAM_SLOTS_NUMBER" \
+  --arg ram_0_size "$RAM_O_SIZE" \
+  --arg ram_0_frequence "$RAM_O_FREQUENCE" \
+  --arg ram_0_slots "$RAM_O_SLOTS" \
+'
+{
+     HARDWARE: {
+       hostname:$host, 
+       cpu:$cpu, 
+       memory_mb:$mem,
+       cpu_cores_number:$cpu_cores_number,
+       cpu_threads_number:$cpu_threads_number,
+       cpu_frequency_min:$cpu_frequency_min,
+       cpu_frequency_max:$cpu_frequency_max,
+       cpu_frequency_cur:$cpu_frequency_cur,
+       gpu_model:$gpu_model,
+       mb_serial:$mb_serial,
+       ram:$ram,
+       ram_number:$ram_number,
+       ram_slots_number:$ram_slots_number,
+       ram_0_size:$ram_0_size,
+       ram_0_frequence:$ram_0_frequence,
+       ram_0_slots:$ram_0_slots 
+      },
+     SOFTWARE: {
+     os:$os,
+     kernel:$kernel
+     }
+}
+')
+echo $json_data 
+
+curl -X POST http://localhost:8000/endpoint \
+    -H "Content-Type: application/json" \
+    -d "$json_data"

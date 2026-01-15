@@ -1,4 +1,5 @@
 class Chien():
+    nom = " "
     nb_pattes=4 
     pelage="brun"
     race="rotweiler"
