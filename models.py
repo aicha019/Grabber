@@ -2,12 +2,26 @@
 import configparser
 import requests
 
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
+
+class EmployeeOrdi(SQLModel, table=True):
+    employee_id: int | None = Field(
+        default=None, 
+        foreign_key="employee.id", 
+        primary_key=True
+    )
+    ordi_id: int | None = Field(
+        default=None, 
+        foreign_key="ordinateur.id",
+        primary_key=True
+    )
+
 
 class Employee(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     first_name: str = Field(index=True)
     family_name: str = Field(index=True)
+    ordinateurs: list["Ordinateur"] = Relationship(back_populates="employees", link_model=EmployeeOrdi)
 
 class Ordinateur(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True) 
@@ -24,7 +38,7 @@ class Ordinateur(SQLModel, table=True):
     gpu_model: str | None = Field(default=None, index=True)
     gpu_memory: str | None = Field(default=None, index=True)
     ram_slots_number: str | None = Field(default=None, index=True)
-    mac_adress: str | None = Field(default=None, index=True)
+    mac_adress: str | None = Field(default=None, index=True, unique=True)
     ram_number: str | None = Field(default=None, index=True)
     ram_size: str | None = Field(default=None, index=True)
     ram_gen: str | None = Field(default=None, index=True)
@@ -39,6 +53,8 @@ class Ordinateur(SQLModel, table=True):
     desktop: str | None = Field(default=None, index=True)
     wm: str | None = Field(default=None, index=True)
     kernel: str | None = Field(default=None, index=True)
+
+    employees: list["Employee"] = Relationship(back_populates="ordinateurs", link_model=EmployeeOrdi)
 
     '''
     def __init__(self):

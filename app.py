@@ -1,12 +1,17 @@
-from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import HTMLResponse
+from typing import Annotated 
+
+from fastapi import FastAPI, Request, HTTPException, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+
+from pydantic import BaseModel
 
 from sqlmodel import SQLModel, create_engine, Session, select
 import json 
 
-from models import Ordinateur
+from models import Ordinateur, Employee, EmployeeOrdi
+from forms import EmployeeForm
 
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -21,6 +26,42 @@ SQLModel.metadata.create_all(engine)
 
 
 #ordi1 = Ordinateur()
+
+@app.get("/employee/create", response_class=HTMLResponse)
+async def get_employee_form(request: Request):
+    with Session(engine) as session:
+        ordis = session.exec(select(Ordinateur)).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="employee_form.html",
+        context={"success": False, "ordis": ordis}
+    )
+
+@app.post("/employee/create", response_class=HTMLResponse)
+async def submit_employee_form(request: Request, data: Annotated[EmployeeForm, Form()]):
+    print(f"data obtained is {data}")
+    with Session(engine) as session :
+        employee = Employee(
+            first_name=data.first_name,
+            family_name=data.family_name
+        )
+        session.add(employee)
+        session.commit()
+        session.refresh(employee)
+
+        if data.ordi_ids:
+            for ordi_id in data.ordi_ids:
+                lien = EmployeeOrdi(employee_id=employee.id, ordi_id=ordi_id)
+                session.add(lien)
+            session.commit()
+
+    with Session(engine) as session:
+        ordis = session.exec(select(Ordinateur)).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="employee_form.html",
+        context={"success": True, "ordis": ordis}
+    )
 
 @app.get("/ordi/{ordi_id}", response_class=HTMLResponse)
 async def get_ordi1_info(request: Request, ordi_id: int):
@@ -66,7 +107,7 @@ async def receive_info(request: Request):
             ordi1 = Ordinateur()
         else:
             ordi1 = ordi_exists
-        ordi1.hostname = hardware.get("hostname", "chépa")
+        ordi1.hostname = hardware.get("hostname", "")
         ordi1.cpu_cores_number = hardware.get('cpu_cores_number', "")
         ordi1.cpu_threads_number = hardware.get('cpu_threads_number', "")
         ordi1.cpu_frequency_min = hardware.get('cpu_frequency_min', "")
