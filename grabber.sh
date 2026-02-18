@@ -101,7 +101,7 @@ RAM_O_SIZE=$(sudo dmidecode -t memory 2>/dev/null | grep "Size:" | grep -v "No M
 RAM_O_FREQUENCE=$(sudo dmidecode -t memory 2>/dev/null | grep "Speed:" | grep -v "Unknown" | awk -F': ' '{print $2}' | tr '\n' ',' | sed 's/,$//')
 RAM_O_SLOTS=$(sudo dmidecode -t memory 2>/dev/null | grep "Locator:" | awk -F': ' '{print $2}' | tr '\n' ',' | sed 's/,$//')
 
-MAC_ADRESS=$(ip link | grep "link/ether" | head -n1)
+MAC_ADRESS=$(ip link | grep "link/ether" | head -n1 | awk '{print $2}')
 IPV4=$(ip -4 addr show | grep inet | grep -v 127.0.0.1 | head -n1 | awk '{print $2}' | cut -d'/' -f1)
 ROUTING=$(ip route | head -n1)
 
