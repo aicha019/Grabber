@@ -21,6 +21,7 @@ class Employee(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     first_name: str = Field(index=True)
     family_name: str = Field(index=True)
+    badge_number: str | None = Field(default=None, index=True)
     ordinateurs: list["Ordinateur"] = Relationship(back_populates="employees", link_model=EmployeeOrdi)
 
 class Ordinateur(SQLModel, table=True):
