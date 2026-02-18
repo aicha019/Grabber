@@ -1,111 +1,105 @@
-# Grabber – Script de collecte d’informations système
+# Grabber – Outil de collecte et gestion d'informations système
 
 **Auteur :** Aïcha Fofana  
-**Contact :** aichafofana019@gmil.com 
+**Contact :** aichafofana019@gmail.com  
 **Étudiante en DSP DevOps – CNAM**
 
 ---
 
 ## Description
 
-`Grabber` est un script Bash permettant de collecter et de consigner des informations détaillées sur le poste de travail.  
-Il récupère les informations matérielles (CPU, RAM, disque), le système et les logiciels installés, les configurations système et les tâches cron, puis les enregistre dans un fichier journal daté.
+`Grabber` est un projet composé de deux parties :
 
-Le script génère automatiquement un fichier journal nommé `journalDDMMYYYY.log` à chaque exécution, contenant une mise en forme claire et lisible.
+- **`grabber.sh`** : un script Bash qui collecte les informations matérielles et logicielles d'un poste de travail (CPU, RAM, GPU, disque, OS, réseau...) et les envoie automatiquement à un serveur central via une requête HTTP.
+
+- **Serveur FastAPI** : une application web Python qui reçoit les données envoyées par le script, les stocke dans une base de données SQLite, et propose une interface web pour consulter et gérer les machines et les employés.
 
 ---
 
-## Objectifs
+## Fonctionnalités
 
-- Consolider les compétences en administration systèmes et réseaux.  
-- Suivre l’état et la configuration du poste de travail de manière automatisée.  
-- Fournir un outil simple pour documenter les informations système.
+- Collecte automatisée des informations système (matériel + logiciel)
+- Envoi des données vers un serveur central en JSON
+- Stockage en base de données SQLite via SQLModel
+- Interface web pour :
+  - Consulter les machines enregistrées
+  - Créer, modifier et gérer les employés
+  - Associer des machines à des employés (relation many-to-many)
 
 ---
 
 ## Prérequis
 
-- Linux (Ubuntu, Debian ou distribution compatible)  
-- Bash  
-- Commandes système : `lscpu`, `free`, `df`, `ip`, `hostname`, `dmidecode`  
-- Accès avec permissions suffisantes pour récupérer certaines informations (`sudo` pour CPU_SERIAL)  
+**Pour le script `grabber.sh` (côté client) :**
+- Linux (Debian/Ubuntu ou distribution compatible)
+- Bash
+- Commandes : `lscpu`, `dmidecode`, `lspci`, `lsblk`, `ip`, `jq`, `curl`
+- Droits `sudo` (nécessaires pour `dmidecode`)
+
+**Pour le serveur (côté serveur) :**
+- Python 3.10+
+- Les dépendances listées dans `requirements.txt`
 
 ---
 
-## Installation et exécution
+## Installation
 
-1. Cloner le dépôt :
+### Serveur
 
 ```bash
 git clone <URL_DU_DEPOT>
 cd grabber
+python3 -m venv gbvenv
+source gbvenv/bin/activate
+pip install -r requirements.txt
+uvicorn app:app --reload
+```
 
-Rendre le script exécutable :
+### Script client
 
+```bash
 chmod +x grabber.sh
+sudo ./grabber.sh <IP_DU_SERVEUR>
+```
 
+---
 
-Lancer le script :
+## Utilisation
 
-./grabber.sh
+Une fois le serveur lancé, l'interface web est accessible sur `http://localhost:8000`.
 
+Depuis un poste client, lance le script en lui passant l'adresse IP du serveur :
 
-⚠️ Le script créera automatiquement un fichier journal dans le dossier output/ nommé selon la date, par exemple : journal07122025.log.
+```bash
+sudo ./grabber.sh 192.168.1.10
+```
 
-Exemple de sortie
+Le script collecte les infos du poste et les envoie automatiquement au serveur. La machine apparaît alors dans l'interface web.
 
-Ci-dessous, un exemple du contenu généré par le script :
+---
 
-2025-12-07 21:33:01
+## Structure du projet
 
-[HOSTNAME]
-HOSTNAME=aicha-20b7s0jc0v
+```
+grabber/
+├── app.py            # Serveur FastAPI (routes et logique)
+├── models.py         # Modèles de base de données (SQLModel)
+├── forms.py          # Formulaires Pydantic
+├── grabber.sh        # Script de collecte côté client
+├── database.db       # Base de données SQLite (générée automatiquement)
+├── templates/        # Templates HTML Jinja2
+│   ├── employees.html
+│   ├── employee_form.html
+│   ├── employee_edit.html
+│   └── ordi.html
+└── static/           # Fichiers statiques CSS/JS
+```
 
-[HARDWARE]
-CPU_MODEL=Intel(R) Core(TM) i5-4300U CPU @ 1.90GHz
-CPU_CORES=2
-CPU_THREADS=2
-CPU_SERIAL=
+---
 
-RAM_TOTAL=7,6Gi
-RAM_USED=2,5Gi
+## Objectifs pédagogiques
 
-SWAP_TOTAL=
-SWAP_USED=
-
-DISK_TOTAL=108G
-DISK_USED=15G
-
-TEMPERATURE=45,0°C
-
-INTERFACES=
-lo
-enp0s25
-wlp3s0
-docker0
-
-IPV4=192.168.1.97/24
-ROUTING=default via 192.168.1.254 dev wlp3s0 proto dhcp src 192.168.1.97 metric 600 
-
-[SOFTWARE]
-OS=Debian GNU/Linux 13 (trixie)
-KERNEL=6.12.43+deb13-amd64
-PACKAGES_INSTALLED=
-<liste complète des packages installés>
-
-SNAP_PACKAGES=0
-FLATPAK_PACKAGES=0
-
-[CONFIG]
-SOURCES.LIST=
-<contenu de /etc/apt/sources.list sans commentaires>
-FSTAB=
-<contenu de /etc/fstab sans commentaires>
-CRONTAB=
-<crontab de l’utilisateur>
-
-[END]
-
-
-💡 Remarque : le fichier journal réel sera généré à chaque exécution, donc les valeurs refléteront ton système actuel.
-
+- Consolider les compétences en administration systèmes et réseaux
+- Découvrir le développement d'une API REST avec FastAPI
+- Mettre en pratique la gestion d'une base de données avec SQLModel
+- Automatiser la collecte d'informations système via Bash

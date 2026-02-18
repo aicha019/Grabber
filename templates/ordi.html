@@ -65,12 +65,10 @@
             <th>Valeur</th>
         </tr>
         {% for key, value in ordi.__dict__.items() %}
-            {% if key not in ['os', 'kernel'] %}
                 <tr>
                     <td>{{ key }}</td>
                     <td>{{ value }}</td>
                 </tr>
-            {% endif %}
         {% endfor %}
     </table>
 </div>
