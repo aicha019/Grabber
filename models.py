@@ -1,9 +1,21 @@
 #!/usr/bin/python3
-import configparser
 import requests
+from typing import List, Optional
 
 from sqlmodel import SQLModel, Field, Relationship
 
+# ===================== PARTITION =====================
+class Partition(SQLModel, table=True):
+    id: int | None = Field(default=None, primary_key=True)
+    ordi_id: int | None = Field(default=None, foreign_key="ordinateur.id")
+    nom: str
+    fstype: str
+    total_size: str
+    used_space: str
+
+    ordinateur: Optional["Ordinateur"] = Relationship(back_populates="partitions")
+
+# ===================== RELATIONS =====================
 class EmployeeOrdi(SQLModel, table=True):
     employee_id: int | None = Field(
         default=None, 
@@ -16,14 +28,18 @@ class EmployeeOrdi(SQLModel, table=True):
         primary_key=True
     )
 
-
+# ===================== EMPLOYEE =====================
 class Employee(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     first_name: str = Field(index=True)
     family_name: str = Field(index=True)
     badge_number: str | None = Field(default=None, index=True)
-    ordinateurs: list["Ordinateur"] = Relationship(back_populates="employees", link_model=EmployeeOrdi)
+    ordinateurs: list["Ordinateur"] = Relationship(
+        back_populates="employees", 
+        link_model=EmployeeOrdi
+    )
 
+# ===================== ORDINATEUR =====================
 class Ordinateur(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True) 
     hostname: str | None = Field(default=None, index=True)
@@ -54,60 +70,28 @@ class Ordinateur(SQLModel, table=True):
     desktop: str | None = Field(default=None, index=True)
     wm: str | None = Field(default=None, index=True)
     kernel: str | None = Field(default=None, index=True)
+    partitions: List[Partition] = Relationship(back_populates="ordinateur")
 
-    employees: list["Employee"] = Relationship(back_populates="ordinateurs", link_model=EmployeeOrdi)
+    employees: list["Employee"] = Relationship(
+        back_populates="ordinateurs", 
+        link_model=EmployeeOrdi
+    )
 
-    '''
-    def __init__(self):
-        self.reload()
-    def reload(self):
-        r = requests.get("http://localhost:8000/summary.txt")
-        r.raise_for_status()
-        print(type(r.content.decode("utf-8")))
-        sum = configparser.ConfigParser()
-        sum.read_string(r.content.decode("utf-8"))
-        # sum.read("/opt/grabber/summary.txt")
-        if "CPU" in sum['HARDWARE']:
-            self.CPU = sum['HARDWARE']['CPU']
-        if "CPU_CORES_NUMBER" in sum['HARDWARE']:
-            self.CPU_CORES_NUMBER = sum['HARDWARE']['CPU_CORES_NUMBER']
-        if "RAM" in sum['HARDWARE']:
-            self.RAM = sum['HARDWARE']['RAM']
-        if "MB_SERIAL" in sum['HARDWARE']:
-            self.MB_SERIAL =sum['HARDWARE']['MB_SERIAL']
-        if "CPU_THREADS_NUMBER" in sum['HARDWARE']:
-            self.CPU_THREADS_NUMBER =sum['HARDWARE']['CPU_THREADS_NUMBER']
-        if "CPU_FREQUENCY_MIN" in sum['HARDWARE']:
-            self.CPU_FREQUENCY_MIN =sum['HARDWARE']['CPU_FREQUENCY_MIN']
-        if "CPU_FREQUENCY_CUR" in sum['HARDWARE']:
-            self.CPU_FREQUENCY_CUR=sum['HARDWARE']['CPU_FREQUENCY_CUR']
-        if "CPU_FREQUENCY_MAX" in sum['HARDWARE']:
-            self.CPU_FREQUENCY_MAX=sum['HARDWARE']['CPU_FREQUENCY_MAX']
-        if "GPU_MODEL" in sum['HARDWARE']:
-            self.GPU_MODEL = sum['HARDWARE']['GPU_MODEL']
-        if "GPU_MEMORY" in sum['HARDWARE']:
-            self.GPU_MEMORY = sum['HARDWARE']['GPU_MEMORY']
-        if "RAM_SLOTS_NUMBER" in sum['HARDWARE']:
-            self.RAM_SLOTS_NUMBER = sum['HARDWARE']['RAM_SLOTS_NUMBER']
-        if "RAM_NUMBER" in sum['HARDWARE']:
-            self.RAM_NUMBER=sum['HARDWARE']['RAM_NUMBER']
-        if "RAM_0_SIZE" in sum['HARDWARE']:
-            self.RAM_0_SIZE=sum['HARDWARE']['RAM_0_SIZE']
-        if "OS" in sum['SOFTWARE']:
-            self.OS = sum['SOFTWARE']['OS']
-        if "KERNEL" in sum['SOFTWARE']:
-            self.KERNEL = sum['SOFTWARE']['KERNEL']
-        return
-    '''
+    # ===================== MÉTHODES =====================
     def fetch_summary(self):
         return
-    def shutdown():
+
+    def shutdown(self):
         return
+
     def status(self):
         return
-    def link_to_user(self,user):
+
+    def link_to_user(self, user):
         return
+
     def remove_user_access(self):
         return
+
     def show_users(self):
         return

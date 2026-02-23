@@ -3,16 +3,16 @@
 # Script : grabber.sh
 # Auteur : Aicha FOFANA
 # Date   : 2025-12-13
-# Version: 0.0.2
+# Version: 0.0.3
 #
 # Description :
 #   Script permettant de collecter différentes informations
 #   système (hardware et software) et les envoyer à un serveur
 #
 # Usage :
-#   ./grabber.sh [IP_SERVEUR]
-#
+#   sudo ./grabber.sh [IP_SERVEUR]
 # ============================================================
+
 export LC_ALL=C
 export LANG=C
 
@@ -105,10 +105,22 @@ MAC_ADRESS=$(ip link | grep "link/ether" | head -n1 | awk '{print $2}')
 IPV4=$(ip -4 addr show | grep inet | grep -v 127.0.0.1 | head -n1 | awk '{print $2}' | cut -d'/' -f1)
 ROUTING=$(ip route | head -n1)
 
-DISK=$(lsblk -dn -o SIZE /dev/sda 2>/dev/null)
-DISK_NUMBER=$(lsblk -dn -o NAME | wc -l)
-DISK_USED=$(df -h / | awk 'NR==2 {print $3}')
-DISK_AVAILABLE=$(df -h / | awk 'NR==2 {print $4}')
+# ====================== PARTITIONS ======================
+partitions_json="[]"
+
+for part in $(lsblk -ln -o NAME | grep -E 'sd|nvme'); do
+    fstype=$(lsblk -no FSTYPE "/dev/$part")
+    total_size=$(lsblk -no SIZE "/dev/$part")
+    used_space=$(df -h "/dev/$part" 2>/dev/null | awk 'NR==2 {print $3}')
+
+    if [ ! -z "$fstype" ]; then
+        partitions_json=$(echo "$partitions_json" | jq --arg nom "$part" \
+                                                     --arg fstype "$fstype" \
+                                                     --arg total_size "$total_size" \
+                                                     --arg used_space "$used_space" \
+                                                     '. + [{nom: $nom, fstype: $fstype, total_size: $total_size, used_space: $used_space}]')
+    fi
+done
 
 # ====================== SOFTWARE ==========================
 OS=$(lsb_release -d 2>/dev/null | cut -f2)
@@ -147,31 +159,7 @@ echo "IPV4=$IPV4" >> "$SUM"
 echo "ROUTING=$ROUTING" >> "$SUM"
 echo "" >> "$SUM"
 
-echo "DISK=$DISK" >> "$SUM"
-echo "DISK_NUMBER=$DISK_NUMBER" >> "$SUM"
-echo "DISK1_USED=$DISK_USED" >> "$SUM"
-echo "DISK1_AVAILABLE=$DISK_AVAILABLE" >> "$SUM"
-
-i=1
-for disk in $(lsblk -dn -o NAME); do
-    disk_size=$(lsblk -dn -o SIZE "/dev/$disk")
-    echo "DISK${i}_SIZE=$disk_size" >> "$SUM"
-
-    parts=$(lsblk -ln -o NAME "/dev/$disk" | tail -n +2)
-    parts_count=$(echo "$parts" | wc -l)
-    echo "DISK${i}_PARTS=$parts_count" >> "$SUM"
-
-    j=1
-    for part in $parts; do
-        part_type=$(lsblk -no FSTYPE "/dev/$part")
-        part_size=$(lsblk -no SIZE "/dev/$part")
-        echo "DISK${i}_PART${j}_TYPE=$part_type" >> "$SUM"
-        echo "DISK${i}_PART${j}_SIZE=$part_size" >> "$SUM"
-        ((j++))
-    done
-    ((i++))
-done
-
+echo "PARTITIONS=$partitions_json" >> "$SUM"
 echo "" >> "$SUM"
 echo "[SOFTWARE]" >> "$SUM"
 echo "OS=$OS" >> "$SUM"
@@ -180,8 +168,6 @@ echo "DESKTOP=$DESKTOP" >> "$SUM"
 echo "WM=$WM" >> "$SUM"
 echo "KERNEL=$KERNEL" >> "$SUM"
 echo "DNS=$DNS" >> "$SUM"
-
-echo "" >> "$SUM"
 
 # ====================== ENVOI JSON ==========================
 json_data=$(jq -n \
@@ -208,6 +194,7 @@ json_data=$(jq -n \
   --arg desktop "$DESKTOP" \
   --arg wm "$WM" \
   --arg kernel "$KERNEL" \
+  --argjson partitions "$partitions_json" \
 '{
   "HARDWARE": {
     "hostname": $hostname,
@@ -227,7 +214,8 @@ json_data=$(jq -n \
     "ram_size": $ram_size,
     "ram_gen": $ram_gen,
     "ipv4": $ipv4,
-    "routing": $routing
+    "routing": $routing,
+    "partitions": $partitions
   },
   "SOFTWARE": {
     "os": $os,
