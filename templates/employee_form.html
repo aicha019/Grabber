@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer un employé</title>
+    <title>{% if is_edit %}Modifier{% else %}Créer{% endif %} un employé</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -36,6 +36,14 @@
             box-sizing: border-box;
             font-size: 14px;
         }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-height: 120px;
+        }
         button {
             background-color: #4CAF50;
             color: white;
@@ -57,34 +65,55 @@
             margin-bottom: 20px;
             border: 1px solid #c3e6cb;
         }
+        small {
+            color: #888;
+            display: block;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2196F3;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
 
-    <h1>Créer un employé</h1>
+    <a href="/employees" class="back-link">← Retour à la liste</a>
+
+    <h1>{% if is_edit %}Modifier{% else %}Créer{% endif %} un employé</h1>
 
     {% if success %}
     <div class="success-message">
-        ✅ Employé créé avec succès !
+        ✅ Employé {% if is_edit %}modifié{% else %}créé{% endif %} avec succès !
     </div>
     {% endif %}
 
-    <form action="/employee/create" method="post">
+    <form action="{% if is_edit %}/employee/{{ employee.id }}/edit{% else %}/employee/create{% endif %}" method="post">
         <label for="first_name">Prénom</label>
-        <input type="text" id="first_name" name="first_name" placeholder="Prénom" required>
+        <input type="text" id="first_name" name="first_name" placeholder="Prénom" value="{% if employee %}{{ employee.first_name }}{% endif %}" required>
 
         <label for="family_name">Nom de famille</label>
-        <input type="text" id="family_name" name="family_name" placeholder="Nom de famille" required>
-        <label for="badge_number">Numéro de badge</label>
-        <input type="text" id="badge_number" name="badge_number" placeholder="Numéro de badge" required>
+        <input type="text" id="family_name" name="family_name" placeholder="Nom de famille" value="{% if employee %}{{ employee.family_name }}{% endif %}" required>
+
+        <label for="badge_number">Numéro de badge (optionnel)</label>
+        <input type="text" id="badge_number" name="badge_number" placeholder="Numéro de badge" value="{% if employee %}{{ employee.badge_number }}{% endif %}">
+
         <label for="ordi_ids">Ordinateurs associés</label>
-<select id="ordi_ids" name="ordi_ids" multiple style="width:100%; padding:10px; margin-bottom:20px; border:1px solid #ccc; border-radius:4px;">
-    {% for ordi in ordis %}
-    <option value="{{ ordi.id }}">{{ ordi.hostname }} ({{ ordi.mac_adress }})</option>
-    {% endfor %}
-</select>
-<small style="color:#888;">Maintenez Ctrl (ou Cmd sur Mac) pour sélectionner plusieurs ordis</small>
-        <button type="submit">Créer l'employé</button>
+        <select id="ordi_ids" name="ordi_ids" multiple>
+            {% for ordi in ordis %}
+            <option value="{{ ordi.id }}" {% if ordi.id in ordi_ids_selected %}selected{% endif %}>
+                {{ ordi.hostname }} ({{ ordi.mac_adress }})
+            </option>
+            {% endfor %}
+        </select>
+        <small>Maintenez Ctrl pour sélectionner plusieurs ordis</small>
+
+        <button type="submit">{% if is_edit %}Modifier{% else %}Créer{% endif %} l'employé</button>
     </form>
 
 </body>
