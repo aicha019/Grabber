@@ -34,13 +34,13 @@ async def get_employee_form(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="employee_form.html",
-        context={"success": False, "ordis": ordis}
+        context={"success": False, "ordis": ordis, "ordi_ids_selected": [], "is_edit": False}
     )
 
 @app.post("/employee/create", response_class=RedirectResponse)
 async def submit_employee_form(request: Request, data: Annotated[EmployeeForm, Form()]):
     print(f"data obtained is {data}")
-    with Session(engine) as session :
+    with Session(engine) as session:
         employee = Employee(
             first_name=data.first_name,
             family_name=data.family_name,
@@ -50,7 +50,6 @@ async def submit_employee_form(request: Request, data: Annotated[EmployeeForm, F
         session.commit()
         session.refresh(employee)
 
-
         if data.ordi_ids:
             for ordi_id in data.ordi_ids:
                 lien = EmployeeOrdi(employee_id=employee.id, ordi_id=ordi_id)
@@ -59,28 +58,36 @@ async def submit_employee_form(request: Request, data: Annotated[EmployeeForm, F
     return RedirectResponse("/employees", status_code=303)
 
 @app.get("/employees", response_class=HTMLResponse)
-async def get_employees(request: Request):
+async def list_employees(request: Request):
     with Session(engine) as session:
-        statement = select(Employee)
-        employees = session.exec(statement).all() 
-
-        return templates.TemplateResponse(
-            request=request, name="employees.html",
-                context={"employees": employees})
-
+        employees = session.exec(select(Employee)).all()
+    return templates.TemplateResponse(
+        request=request,
+        name="employees_list.html",
+        context={"employees": employees}
+    )
 
 @app.get("/employee/{employee_id}/edit", response_class=HTMLResponse)
 async def edit_employee_form(request: Request, employee_id: int):
     with Session(engine) as session:
-        employee = session.get(Employee, employee_id)
-        if employee is None:
+        employee = session.exec(select(Employee).where(Employee.id == employee_id)).first()
+        if not employee:
             raise HTTPException(status_code=404, detail="Employé introuvable")
         ordis = session.exec(select(Ordinateur)).all()
-        ordi_ids_lies = [o.id for o in employee.ordinateurs]
+        statement = select(EmployeeOrdi).where(EmployeeOrdi.employee_id == employee_id)
+        associations = session.exec(statement).all()
+        ordi_ids_selected = [assoc.ordi_id for assoc in associations]
+    
     return templates.TemplateResponse(
         request=request,
-        name="employee_edit.html",
-        context={"employee": employee, "ordis": ordis, "ordi_ids_lies": ordi_ids_lies}
+        name="employee_form.html",
+        context={
+            "success": False,
+            "ordis": ordis,
+            "employee": employee,
+            "ordi_ids_selected": ordi_ids_selected,
+            "is_edit": True
+        }
     )
 
 @app.post("/employee/{employee_id}/edit", response_class=RedirectResponse)
@@ -109,15 +116,11 @@ async def submit_edit_employee(request: Request, employee_id: int, data: Annotat
     return RedirectResponse("/employees", status_code=303)
 
 
-
-
-
 @app.get("/ordi/{ordi_id}", response_class=HTMLResponse)
 async def get_ordi1_info(request: Request, ordi_id: int):
     with Session(engine) as session: 
-        statement = select(Ordinateur).where( Ordinateur.id == ordi_id )
+        statement = select(Ordinateur).where(Ordinateur.id == ordi_id)
         this_ordi = session.exec(statement).first() 
-
         return templates.TemplateResponse(
             request=request, name="ordi.html", context={"ordi": this_ordi}
         )
@@ -150,7 +153,7 @@ async def receive_info(request: Request):
     hardware = data.get("HARDWARE", {})
     
     with Session(engine) as session:
-        statement = select(Ordinateur).where( Ordinateur.mac_adress == hardware.get('mac_adress', ""))
+        statement = select(Ordinateur).where(Ordinateur.mac_adress == hardware.get('mac_adress', ""))
         ordi_exists = session.exec(statement).first()
 
         if ordi_exists is None:
@@ -186,5 +189,3 @@ async def receive_info(request: Request):
         session.commit()
 
     return {"status": "ok"}
-
-
