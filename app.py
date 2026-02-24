@@ -195,3 +195,4 @@ async def receive_info(request: Request):
         ordi_id = ordi.id  
 
     return {"status": "ok", "ordi_id": ordi_id}
+### test push sans mdp
