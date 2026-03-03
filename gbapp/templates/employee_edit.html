@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des employés</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 900px; margin: 50px auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        th { background-color: #4CAF50; color: white; }
+        a { color: #4CAF50; }
+    </style>
+</head>
+<body>
+    <h1>Ajouter un employé</h1>
+    <a href="/employee/create">+ Créer un employé</a>
+    <br><br>
+    <table>
+        <tr>
+            <th>Prénom</th>
+            <th>Nom</th>
+            <th>Badge</th>
+            <th>Ordinateurs</th>
+            <th>Actions</th>
+        </tr>
+        {% for employee in employees %}
+        <tr>
+            <td>{{ employee.first_name }}</td>
+            <td>{{ employee.family_name }}</td>
+            <td>{{ employee.badge_number }}</td>
+            <td>{% for ordi in employee.ordinateurs %}{{ ordi.hostname }} {% endfor %}</td>
+            <td><a href="/employee/{{ employee.id }}/edit">Modifier</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

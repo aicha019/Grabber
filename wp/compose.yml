@@ -1,0 +1,20 @@
+services:
+  wordpress:
+    image: wordpress:latest
+    depends_on:
+      - mariadb
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: wppwd
+      WORDPRESS_DB_NAME: wpdb
+
+  mariadb:
+    image: mariadb:11
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpwd
+      MYSQL_USER: wp
+      MYSQL_PASSWORD: wppwd
+      MYSQL_DATABASE: wpdb

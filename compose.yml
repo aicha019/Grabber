@@ -1,0 +1,45 @@
+services:
+  caddy:
+    image: caddy:latest
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+
+  grabber:
+    build: ./gbapp
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_USER: gb
+      POSTGRES_PASSWORD: gbpwd
+      POSTGRES_DB: gbdb
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: gb
+      POSTGRES_PASSWORD: gbpwd
+      POSTGRES_DB: gbdb
+
+  wordpress:
+    image: wordpress:latest
+    depends_on:
+      - mariadb
+    environment:
+      WORDPRESS_DB_HOST: mariadb:3306
+      WORDPRESS_DB_USER: wp
+      WORDPRESS_DB_PASSWORD: wppwd
+      WORDPRESS_DB_NAME: wpdb
+
+  mariadb:
+    image: mariadb:11
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpwd
+      MYSQL_USER: wp
+      MYSQL_PASSWORD: wppwd
+      MYSQL_DATABASE: wpdb
+

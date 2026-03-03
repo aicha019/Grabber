@@ -10,9 +10,10 @@
 
 `Grabber` est un projet composé de deux parties :
 
-- **`grabber.sh`** : un script Bash qui collecte les informations matérielles et logicielles d'un poste de travail (CPU, RAM, GPU, disque, OS, réseau...) et les envoie automatiquement à un serveur central via une requête HTTP.
+- **`grabber.sh`** : un script Bash qui collecte les informations matérielles et logicielles d'un poste de travail (CPU, RAM, GPU, disques, OS, réseau...) et les envoie automatiquement à un serveur central via une requête HTTP.
+- **Serveur FastAPI** : une application web Python qui reçoit les données envoyées par le script, les stocke dans une base de données PostgreSQL, et propose une interface web pour consulter et gérer les machines et les employés.
 
-- **Serveur FastAPI** : une application web Python qui reçoit les données envoyées par le script, les stocke dans une base de données SQLite, et propose une interface web pour consulter et gérer les machines et les employés.
+Le tout est conteneurisé avec Docker et servi derrière un reverse proxy Caddy.
 
 ---
 
@@ -20,11 +21,35 @@
 
 - Collecte automatisée des informations système (matériel + logiciel)
 - Envoi des données vers un serveur central en JSON
-- Stockage en base de données SQLite via SQLModel
+- Stockage en base de données PostgreSQL via SQLModel
 - Interface web pour :
-  - Consulter les machines enregistrées
+  - Consulter les machines enregistrées avec leurs partitions
   - Créer, modifier et gérer les employés
   - Associer des machines à des employés (relation many-to-many)
+- Reverse proxy Caddy avec TLS pour `grabber.local` et `wp.local`
+- Instance WordPress disponible sur `wp.local`
+
+---
+
+## Structure du projet
+```
+grabber/
+├── grabber.sh          # Script de collecte côté client
+├── README.md
+├── compose.yml         # Compose principal (grabber + postgres + wordpress + mariadb + caddy)
+├── caddy/
+│   └── Caddyfile       # Configuration du reverse proxy
+├── gbapp/
+│   ├── app.py          # Serveur FastAPI
+│   ├── models.py       # Modèles de base de données
+│   ├── forms.py        # Formulaires Pydantic
+│   ├── requirements.txt
+│   ├── Dockerfile
+│   ├── templates/      # Templates HTML Jinja2
+│   └── static/         # Fichiers statiques CSS/JS
+└── wp/
+    └── compose.yml     # Compose WordPress + MariaDB (référence)
+```
 
 ---
 
@@ -34,72 +59,56 @@
 - Linux (Debian/Ubuntu ou distribution compatible)
 - Bash
 - Commandes : `lscpu`, `dmidecode`, `lspci`, `lsblk`, `ip`, `jq`, `curl`
-- Droits `sudo` (nécessaires pour `dmidecode`)
+- Droits `sudo`
 
-**Pour le serveur (côté serveur) :**
-- Python 3.10+
-- Les dépendances listées dans `requirements.txt`
+**Pour le serveur :**
+- Docker et Docker Compose
 
 ---
 
-## Installation
+## Installation et déploiement
 
-### Serveur
+### 1. Configurer `/etc/hosts`
 
+Ajouter ces lignes dans `/etc/hosts` pour accéder aux applications via leur nom de domaine local :
 ```bash
-git clone <URL_DU_DEPOT>
-cd grabber
-python3 -m venv gbvenv
-source gbvenv/bin/activate
-pip install -r requirements.txt
-uvicorn app:app --reload
+echo "127.0.0.1 grabber.local" | sudo tee -a /etc/hosts
+echo "127.0.0.1 wp.local" | sudo tee -a /etc/hosts
 ```
 
-### Script client
+### 2. Lancer les services
 
+Depuis la racine du projet :
 ```bash
-chmod +x grabber.sh
-sudo ./grabber.sh <IP_DU_SERVEUR>
+sudo docker compose up -d --build
 ```
+
+Les applications sont accessibles sur :
+
+| URL | Application |
+|-----|-------------|
+| http://grabber.local | Interface web Grabber |
+| http://wp.local | WordPress |
 
 ---
 
-## Utilisation
+## Utilisation du script grabber.sh
 
-Une fois le serveur lancé, l'interface web est accessible sur `http://localhost:8000`.
-
-Depuis un poste client, lance le script en lui passant l'adresse IP du serveur :
-
+Depuis un poste client, lancer le script en lui passant l'adresse IP du serveur :
 ```bash
-sudo ./grabber.sh 192.168.1.10
+sudo ./grabber.sh 127.0.0.1
 ```
 
-Le script collecte les infos du poste et les envoie automatiquement au serveur. La machine apparaît alors dans l'interface web.
+Le script collecte les infos du poste et les envoie au serveur. La machine apparaît ensuite dans l'interface web sur `http://grabber.local/employees`.
 
 ---
 
-## Structure du projet
-
-```
-grabber/
-├── app.py            # Serveur FastAPI (routes et logique)
-├── models.py         # Modèles de base de données (SQLModel)
-├── forms.py          # Formulaires Pydantic
-├── grabber.sh        # Script de collecte côté client
-├── database.db       # Base de données SQLite (générée automatiquement)
-├── templates/        # Templates HTML Jinja2
-│   ├── employees.html
-│   ├── employee_form.html
-│   ├── employee_edit.html
-│   └── ordi.html
-└── static/           # Fichiers statiques CSS/JS
+## Arrêter les services
+```bash
+sudo docker compose down
 ```
 
----
-
-## Objectifs pédagogiques
-
-- Consolider les compétences en administration systèmes et réseaux
-- Découvrir le développement d'une API REST avec FastAPI
-- Mettre en pratique la gestion d'une base de données avec SQLModel
-- Automatiser la collecte d'informations système via Bash
+Pour supprimer également les données :
+```bash
+sudo docker compose down -v
+```

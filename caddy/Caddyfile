@@ -1,0 +1,9 @@
+grabber.local {
+    tls internal
+    reverse_proxy grabber:8000
+}
+
+wp.local {
+    tls internal
+    reverse_proxy wordpress:80
+}

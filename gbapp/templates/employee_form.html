@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if is_edit %}Modifier{% else %}Créer{% endif %} un employé</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 0 20px;
+            background-color: #f5f5f5;
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            min-height: 120px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #c3e6cb;
+        }
+        small {
+            color: #888;
+            display: block;
+            margin-bottom: 20px;
+        }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #2196F3;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="/employees" class="back-link">← Retour à la liste</a>
+
+    <h1>{% if is_edit %}Modifier{% else %}Créer{% endif %} un employé</h1>
+
+    {% if success %}
+    <div class="success-message">
+        ✅ Employé {% if is_edit %}modifié{% else %}créé{% endif %} avec succès !
+    </div>
+    {% endif %}
+
+    <form action="{% if is_edit %}/employee/{{ employee.id }}/edit{% else %}/employee/create{% endif %}" method="post">
+        <label for="first_name">Prénom</label>
+        <input type="text" id="first_name" name="first_name" placeholder="Prénom" value="{% if employee %}{{ employee.first_name }}{% endif %}" required>
+
+        <label for="family_name">Nom de famille</label>
+        <input type="text" id="family_name" name="family_name" placeholder="Nom de famille" value="{% if employee %}{{ employee.family_name }}{% endif %}" required>
+
+        <label for="badge_number">Numéro de badge (optionnel)</label>
+        <input type="text" id="badge_number" name="badge_number" placeholder="Numéro de badge" value="{% if employee %}{{ employee.badge_number }}{% endif %}">
+
+        <label for="ordi_ids">Ordinateurs associés</label>
+        <select id="ordi_ids" name="ordi_ids" multiple>
+            {% for ordi in ordis %}
+            <option value="{{ ordi.id }}" {% if ordi.id in ordi_ids_selected %}selected{% endif %}>
+                {{ ordi.hostname }} ({{ ordi.mac_adress }})
+            </option>
+            {% endfor %}
+        </select>
+        <small>Maintenez Ctrl pour sélectionner plusieurs ordis</small>
+
+        <button type="submit">{% if is_edit %}Modifier{% else %}Créer{% endif %} l'employé</button>
+    </form>
+
+</body>
+</html>
