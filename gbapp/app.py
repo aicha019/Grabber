@@ -113,6 +113,19 @@ async def submit_edit_employee(request: Request, employee_id: int, data: Annotat
     return RedirectResponse("/employees", status_code=303)
 
 
+
+# ===================== LIST ORDI  =====================
+
+@app.get("/ordis", response_class=HTMLResponse)
+async def list_ordis(request: Request):
+    with Session(engine) as session:
+        ordis = session.exec(select(Ordinateur)).all()
+    return templates.TemplateResponse(
+        "ordis_list.html",
+        {"request": request, "ordis": ordis}
+    )
+
+
 # ===================== ORDINATEUR INFO =====================
 @app.get("/ordi/{ordi_id}", response_class=HTMLResponse)
 async def get_ordi_info(request: Request, ordi_id: int):
