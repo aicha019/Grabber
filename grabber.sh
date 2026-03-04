@@ -181,7 +181,10 @@ json_data=$(jq -n \
   --arg cpu_frequency_min "$CPU_FREQUENCY_MIN" \
   --arg cpu_frequency_max "$CPU_FREQUENCY_MAX" \
   --arg cpu_frequency_cur "$CPU_FREQUENCY_CUR" \
+  --arg gpu_memory "$GPU_MEMORY" \
   --arg gpu_model "$GPU_MODEL" \
+  --arg ram_0_frequence "$RAM_0_FREQUENCE" \
+  --arg ram_0_slots "RAM_0_SLOTS" \
   --arg ram_slots_number "$RAM_SLOTS_NUMBER" \
   --arg mac_adress "$MAC_ADRESS" \
   --arg ram_number "$RAM_NUMBER" \
@@ -207,7 +210,10 @@ json_data=$(jq -n \
     "cpu_frequency_min": $cpu_frequency_min,
     "cpu_frequency_cur": $cpu_frequency_cur,
     "cpu_frequency_max": $cpu_frequency_max,
+    "gpu_memory": $gpu_memory,
     "gpu_model": $gpu_model,
+    "ram_0_frequence": $ram_0_frequence,
+    "ram_0_slots": $ram_0_slots,
     "ram_slots_number": $ram_slots_number,
     "mac_adress": $mac_adress,
     "ram_number": $ram_number,
