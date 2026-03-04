@@ -81,7 +81,7 @@
             <th>Valeur</th>
         </tr>
         {% for key, value in ordi.__dict__.items() %}
-            {% if key in ['os', 'kernel'] %}
+            {% if key in ['os', 'arch', 'desktop', 'wm', 'kernel'] %}
                 <tr>
                     <td>{{ key }}</td>
                     <td>{{ value }}</td>
