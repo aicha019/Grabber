@@ -2,10 +2,7 @@
 <head>
     <title>Informations machine</title>
     <style>
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         body {
             font-family: Arial, sans-serif;
             background-color: #f4f6f8;
@@ -17,7 +14,6 @@
             justify-content: flex-start;
             padding-top: 40px;
         }
-
         .table-container {
             background-color: #ffffff;
             padding: 24px;
@@ -25,72 +21,64 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             margin-bottom: 30px;
         }
-
-        table {
-            border-collapse: collapse;
-            width: 420px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-        }
-
-        th {
-            background-color: #2c3e50;
-            color: white;
-            text-align: left;
-            width: 45%;
-        }
-
-        td {
-            text-align: right;
-            font-size: 15px;
-        }
-
-        h2 {
-            margin-bottom: 10px;
-            font-family: Arial, sans-serif;
-            color: #2c3e50;
-        }
+        table { border-collapse: collapse; width: 420px; }
+        th, td { border: 1px solid #ddd; padding: 12px; }
+        th { background-color: #2c3e50; color: white; text-align: left; width: 45%; }
+        td { text-align: right; font-size: 15px; }
+        h2 { margin-bottom: 10px; font-family: Arial, sans-serif; color: #2c3e50; }
     </style>
 </head>
 <body>
-
 <div class="table-container">
     <h2>Hardware</h2>
     <table>
-        <tr>
-            <th>Information</th>
-            <th>Valeur</th>
-        </tr>
-        {% for key, value in ordi.__dict__.items() %}
-                <tr>
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-        {% endfor %}
+        <tr><th>Information</th><th>Valeur</th></tr>
+        <tr><td>Hostname</td><td>{{ ordi.hostname }}</td></tr>
+        <tr><td>CPU</td><td>{{ ordi.cpu }}</td></tr>
+        <tr><td>CPU ID</td><td>{{ ordi.cpu_id }}</td></tr>
+        <tr><td>Coeurs</td><td>{{ ordi.cpu_cores_number }}</td></tr>
+        <tr><td>Threads</td><td>{{ ordi.cpu_threads_number }}</td></tr>
+        <tr><td>Fréquence min</td><td>{{ ordi.cpu_frequency_min }}</td></tr>
+        <tr><td>Fréquence max</td><td>{{ ordi.cpu_frequency_max }}</td></tr>
+        <tr><td>Fréquence actuelle</td><td>{{ ordi.cpu_frequency_cur }}</td></tr>
+        <tr><td>GPU</td><td>{{ ordi.gpu_model }}</td></tr>
+        <tr><td>RAM taille</td><td>{{ ordi.ram_size }}</td></tr>
+        <tr><td>RAM nombre</td><td>{{ ordi.ram_number }}</td></tr>
+        <tr><td>RAM slots</td><td>{{ ordi.ram_slots_number }}</td></tr>
+        <tr><td>RAM génération</td><td>{{ ordi.ram_gen }}</td></tr>
+        <tr><td>Série carte mère</td><td>{{ ordi.mb_serial }}</td></tr>
+        <tr><td>Série châssis</td><td>{{ ordi.chassis_serial }}</td></tr>
+        <tr><td>Adresse MAC</td><td>{{ ordi.mac_adress }}</td></tr>
+        <tr><td>IPv4</td><td>{{ ordi.ipv4 }}</td></tr>
+        <tr><td>Routage</td><td>{{ ordi.routing }}</td></tr>
     </table>
 </div>
 
 <div class="table-container">
     <h2>Software</h2>
     <table>
-        <tr>
-            <th>Information</th>
-            <th>Valeur</th>
-        </tr>
-        {% for key, value in ordi.__dict__.items() %}
-            {% if key in ['os', 'arch', 'desktop', 'wm', 'kernel'] %}
-                <tr>
-                    <td>{{ key }}</td>
-                    <td>{{ value }}</td>
-                </tr>
-            {% endif %}
-        {% endfor %}
+        <tr><th>Information</th><th>Valeur</th></tr>
+        <tr><td>OS</td><td>{{ ordi.os }}</td></tr>
+        <tr><td>Architecture</td><td>{{ ordi.arch }}</td></tr>
+        <tr><td>Bureau</td><td>{{ ordi.desktop }}</td></tr>
+        <tr><td>WM</td><td>{{ ordi.wm }}</td></tr>
+        <tr><td>Kernel</td><td>{{ ordi.kernel }}</td></tr>
     </table>
 </div>
 
+<div class="table-container">
+    <h2>Partitions</h2>
+    <table>
+        <tr><th>Nom</th><th>Type FS</th><th>Taille totale</th><th>Espace utilisé</th></tr>
+        {% for partition in partitions %}
+        <tr>
+            <td>{{ partition.nom }}</td>
+            <td>{{ partition.fstype }}</td>
+            <td>{{ partition.total_size }}</td>
+            <td>{{ partition.used_space }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
 </body>
 </html>
-
