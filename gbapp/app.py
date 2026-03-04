@@ -176,9 +176,11 @@ async def receive_info(request: Request):
             session.commit()
             session.refresh(ordi)
 
-        # ettre à jour toutes les infos de l'ordi
+        # Mettre à jour toutes les infos de l'ordi
         for key, value in {
             "hostname": hardware.get("hostname", ""),
+            "cpu": hardware.get("cpu", ""),
+            "cpu_id": hardware.get("cpu_id", ""),
             "cpu_cores_number": hardware.get("cpu_cores_number", ""),
             "cpu_threads_number": hardware.get("cpu_threads_number", ""),
             "cpu_frequency_min": hardware.get("cpu_frequency_min", ""),
@@ -187,11 +189,19 @@ async def receive_info(request: Request):
             "gpu_model": hardware.get("gpu_model", ""),
             "gpu_memory": hardware.get("gpu_memory", ""),
             "mb_serial": hardware.get("mb_serial", ""),
+            "chassis_serial": hardware.get("chassis_serial", ""),
             "ram_size": hardware.get("ram_size", ""),
             "ram_number": hardware.get("ram_number", ""),
             "ram_slots_number": hardware.get("ram_slots_number", ""),
+            "ram_gen": hardware.get("ram_gen", ""),
             "ram_0_frequence": hardware.get("ram_0_frequence", ""),
             "ram_0_slots": hardware.get("ram_0_slots", ""),
+            "ipv4": hardware.get("ipv4", ""),
+            "routing": hardware.get("routing", ""),
+            "os": software.get("os", ""),
+            "arch": software.get("arch", ""),
+            "desktop": software.get("desktop", ""),
+            "wm": software.get("wm", ""),
             "kernel": software.get("kernel", "")
         }.items():
             setattr(ordi, key, value)
