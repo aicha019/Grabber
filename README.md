@@ -34,19 +34,19 @@ Le tout est conteneurisé avec Docker et servi derrière un reverse proxy Caddy.
 ## Structure du projet
 ```
 grabber/
-├── grabber.sh          # Script de collecte côté client
+├── grabber.sh          #Script de collecte côté client
 ├── README.md
-├── compose.yml         # Compose principal (grabber + postgres + wordpress + mariadb + caddy)
+├── compose.yml         # Compose principal 
 ├── caddy/
-│   └── Caddyfile       # Configuration du reverse proxy
+│   └── Caddyfile       # Config reverse proxy
 ├── gbapp/
 │   ├── app.py          # Serveur FastAPI
 │   ├── models.py       # Modèles de base de données
 │   ├── forms.py        # Formulaires Pydantic
 │   ├── requirements.txt
 │   ├── Dockerfile
-│   ├── templates/      # Templates HTML Jinja2
-│   └── static/         # Fichiers statiques CSS/JS
+│   ├── templates/      #Templates HTML Jinja2
+│   └── static/    
 └── wp/
     └── compose.yml     # Compose WordPress + MariaDB (référence)
 ```
