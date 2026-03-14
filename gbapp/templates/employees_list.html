@@ -1,87 +1,49 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des employés</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 0 20px;
-            background-color: #f5f5f5;
-        }
-        h1 {
-            color: #333;
-        }
-        table {
-            width: 100%;
-            background: white;
-            border-collapse: collapse;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #4CAF50;
-            color: white;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-        .btn {
-            padding: 6px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        .btn-edit {
-            background-color: #2196F3;
-            color: white;
-        }
-        .btn-create {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <h1>Liste des employés</h1>
-    
-    <a href="/employee/create" class="btn-create">+ Créer un employé</a>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Prénom</th>
-                <th>Nom</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for employee in employees %}
-            <tr>
-                <td>{{ employee.id }}</td>
-                <td>{{ employee.first_name }}</td>
-                <td>{{ employee.family_name }}</td>
-                <td>
-                    <a href="/employee/{{ employee.id }}/edit" class="btn btn-edit">Modifier</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends "base.html" %}
+{% set active = "employees" %}
+{% block title %}Employés — Grabber{% endblock %}
+
+{% block hero %}
+<div class="hero">
+    <div>
+        <div class="hero-title">Employés</div>
+        <div class="hero-sub">{{ employees|length }} employé(s) enregistré(s)</div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+    <div class="section-title" style="margin-bottom:0;">// liste des employés</div>
+    <a href="/employee/create" class="btn btn-primary">+ Nouvel employé</a>
+</div>
+
+{% if employees %}
+<div class="grid-emp">
+    {% for employee in employees %}
+    <div class="card">
+        <div class="card-accent blue"></div>
+        <div style="font-size:14px; font-weight:600;">{{ employee.first_name }} {{ employee.family_name }}</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px;">Badge : {{ employee.badge_number or '—' }}</div>
+        <div style="font-size:11px; color:var(--muted); margin-top:4px;">
+            Machines : 
+            {% if employee.ordinateurs %}
+                {% for ordi in employee.ordinateurs %}
+                    <span style="color:var(--blue);">{{ ordi.hostname }}</span>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            {% else %}
+                Aucune
+            {% endif %}
+</div>
+        <div style="display:flex; gap:6px; margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
+            <a href="/employee/{{ employee.id }}/edit" class="btn btn-ghost btn-sm">Modifier</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty">
+    <p>Aucun employé enregistré.</p>
+    <a href="/employee/create" class="btn btn-primary" style="margin-top:14px; display:inline-flex;">+ Créer le premier</a>
+</div>
+{% endif %}
+{% endblock %}

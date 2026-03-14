@@ -1,84 +1,113 @@
-<html>
-<head>
-    <title>Informations machine</title>
-    <style>
-        * { box-sizing: border-box; }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f8;
-            margin: 0;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            padding-top: 40px;
-        }
-        .table-container {
-            background-color: #ffffff;
-            padding: 24px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-        table { border-collapse: collapse; width: 420px; }
-        th, td { border: 1px solid #ddd; padding: 12px; }
-        th { background-color: #2c3e50; color: white; text-align: left; width: 45%; }
-        td { text-align: right; font-size: 15px; }
-        h2 { margin-bottom: 10px; font-family: Arial, sans-serif; color: #2c3e50; }
-    </style>
-</head>
-<body>
-<div class="table-container">
-    <h2>Hardware</h2>
-    <table>
-        <tr><th>Information</th><th>Valeur</th></tr>
-        <tr><td>Hostname</td><td>{{ ordi.hostname }}</td></tr>
-        <tr><td>CPU</td><td>{{ ordi.cpu }}</td></tr>
-        <tr><td>CPU ID</td><td>{{ ordi.cpu_id }}</td></tr>
-        <tr><td>Coeurs</td><td>{{ ordi.cpu_cores_number }}</td></tr>
-        <tr><td>Threads</td><td>{{ ordi.cpu_threads_number }}</td></tr>
-        <tr><td>Fréquence min</td><td>{{ ordi.cpu_frequency_min }}</td></tr>
-        <tr><td>Fréquence max</td><td>{{ ordi.cpu_frequency_max }}</td></tr>
-        <tr><td>Fréquence actuelle</td><td>{{ ordi.cpu_frequency_cur }}</td></tr>
-        <tr><td>GPU</td><td>{{ ordi.gpu_model }}</td></tr>
-        <tr><td>RAM taille</td><td>{{ ordi.ram_size }}</td></tr>
-        <tr><td>RAM nombre</td><td>{{ ordi.ram_number }}</td></tr>
-        <tr><td>RAM slots</td><td>{{ ordi.ram_slots_number }}</td></tr>
-        <tr><td>RAM génération</td><td>{{ ordi.ram_gen }}</td></tr>
-        <tr><td>Série carte mère</td><td>{{ ordi.mb_serial }}</td></tr>
-        <tr><td>Série châssis</td><td>{{ ordi.chassis_serial }}</td></tr>
-        <tr><td>Adresse MAC</td><td>{{ ordi.mac_adress }}</td></tr>
-        <tr><td>IPv4</td><td>{{ ordi.ipv4 }}</td></tr>
-        <tr><td>Routage</td><td>{{ ordi.routing }}</td></tr>
-    </table>
+{% extends "base.html" %}
+{% set active = "ordis" %}
+{% block title %}{{ ordi.hostname }} — Grabber{% endblock %}
+
+{% block hero %}
+<div class="hero">
+    <div>
+        <div class="hero-title">{{ ordi.hostname }}</div>
+        <div class="hero-sub">{{ ordi.ipv4 or '—' }} · {{ ordi.mac_adress or '—' }}</div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+        <span class="badge badge-on" style="font-size:11px; padding:5px 12px;">online</span>
+        <a href="/ordis" class="btn btn-ghost btn-sm" style="background:rgba(255,255,255,0.1); color:#fff; border-color:rgba(255,255,255,0.2);">← Retour</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="grid-2col">
+
+    <div class="card">
+        <div class="card-accent blue"></div>
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-family:var(--mono); margin-bottom:12px;">CPU</div>
+        <div class="meta-row"><span class="meta-key">Modèle</span><span class="meta-val">{{ ordi.cpu or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">CPU ID</span><span class="meta-val">{{ ordi.cpu_id or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Coeurs</span><span class="meta-val">{{ ordi.cpu_cores_number or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Threads</span><span class="meta-val">{{ ordi.cpu_threads_number or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Fréq. min</span><span class="meta-val">{{ ordi.cpu_frequency_min or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Fréq. actuelle</span><span class="meta-val">{{ ordi.cpu_frequency_cur or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Fréq. max</span><span class="meta-val">{{ ordi.cpu_frequency_max or '—' }}</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-accent blue"></div>
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-family:var(--mono); margin-bottom:12px;">Mémoire & GPU</div>
+        <div class="meta-row"><span class="meta-key">Taille RAM</span><span class="meta-val">{{ ordi.ram_size or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Type RAM</span><span class="meta-val">{{ ordi.ram_gen or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Slots RAM</span><span class="meta-val">{{ ordi.ram_slots_number or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Barrettes installées</span><span class="meta-val">{{ ordi.ram_number or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">GPU</span><span class="meta-val">{{ ordi.gpu_model or '—' }}</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-accent blue"></div>
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-family:var(--mono); margin-bottom:12px;">Carte mère & Châssis</div>
+        <div class="meta-row"><span class="meta-key">Série carte mère</span><span class="meta-val">{{ ordi.mb_serial or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Série châssis</span><span class="meta-val">{{ ordi.chassis_serial or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Adresse MAC</span><span class="meta-val">{{ ordi.mac_adress or '—' }}</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-accent blue"></div>
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-family:var(--mono); margin-bottom:12px;">Réseau</div>
+        <div class="meta-row"><span class="meta-key">IPv4</span><span class="meta-val" style="color:var(--blue);">{{ ordi.ipv4 or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Routage</span><span class="meta-val" style="font-size:10px; word-break:break-all;">{{ ordi.routing or '—' }}</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-accent blue"></div>
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-family:var(--mono); margin-bottom:12px;">Système</div>
+        <div class="meta-row"><span class="meta-key">OS</span><span class="meta-val">{{ ordi.os or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Kernel</span><span class="meta-val">{{ ordi.kernel or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Architecture</span><span class="meta-val">{{ ordi.arch or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Desktop</span><span class="meta-val">{{ ordi.desktop or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">Window Manager</span><span class="meta-val">{{ ordi.wm or '—' }}</span></div>
+    </div>
+
+    <div class="card">
+        <div class="card-accent blue"></div>
+        <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-family:var(--mono); margin-bottom:12px;">Employés assignés</div>
+        {% if employees %}
+            {% for emp in employees %}
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="avatar" style="width:32px; height:32px; font-size:11px; border-radius:7px;">
+                        {{ emp.first_name[0] }}{{ emp.family_name[0] }}
+                    </div>
+                    <span style="font-size:13px; font-weight:500;">{{ emp.first_name }} {{ emp.family_name }}</span>
+                </div>
+                <a href="/employee/{{ emp.id }}/edit" class="btn btn-ghost btn-sm">Gérer</a>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p style="color:var(--muted); font-size:12px;">Aucun employé assigné.</p>
+        {% endif %}
+    </div>
+
 </div>
 
-<div class="table-container">
-    <h2>Software</h2>
-    <table>
-        <tr><th>Information</th><th>Valeur</th></tr>
-        <tr><td>OS</td><td>{{ ordi.os }}</td></tr>
-        <tr><td>Architecture</td><td>{{ ordi.arch }}</td></tr>
-        <tr><td>Bureau</td><td>{{ ordi.desktop }}</td></tr>
-        <tr><td>WM</td><td>{{ ordi.wm }}</td></tr>
-        <tr><td>Kernel</td><td>{{ ordi.kernel }}</td></tr>
-    </table>
-</div>
-
-<div class="table-container">
-    <h2>Partitions</h2>
-    <table>
-        <tr><th>Nom</th><th>Type FS</th><th>Taille totale</th><th>Espace utilisé</th></tr>
+<div class="card" style="margin-top:0;">
+    <div class="card-accent blue"></div>
+    <div style="font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); font-family:var(--mono); margin-bottom:14px;">Partitions</div>
+    {% if partitions %}
+    <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(200px,1fr)); gap:12px;">
         {% for partition in partitions %}
-        <tr>
-            <td>{{ partition.nom }}</td>
-            <td>{{ partition.fstype }}</td>
-            <td>{{ partition.total_size }}</td>
-            <td>{{ partition.used_space }}</td>
-        </tr>
+        <div style="background:var(--bg); border-radius:8px; padding:12px; border:1px solid var(--border);">
+            <div style="font-family:var(--mono); font-size:12px; font-weight:500; margin-bottom:8px; color:var(--blue-dark);">{{ partition.nom }}</div>
+            <div class="meta-row"><span class="meta-key">Type FS</span><span class="meta-val">{{ partition.fstype }}</span></div>
+            <div class="meta-row"><span class="meta-key">Taille</span><span class="meta-val">{{ partition.total_size }}</span></div>
+            <div class="meta-row"><span class="meta-key">Utilisé</span><span class="meta-val">{{ partition.used_space }}</span></div>
+        </div>
         {% endfor %}
-    </table>
+    </div>
+    {% else %}
+    <p style="color:var(--muted); font-size:12px;">Aucune partition.</p>
+    {% endif %}
 </div>
-</body>
-</html>
+
+<div style="display:flex; gap:10px;">
+    <a href="/ordis" class="btn btn-ghost">← Retour</a>
+    <a href="/ordi/{{ ordi.id }}/delete" class="btn btn-danger">Supprimer</a>
+</div>
+{% endblock %}

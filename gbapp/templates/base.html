@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Grabber{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --bg:           #f4f6fb;
+            --white:        #ffffff;
+            --blue:         #0369a1;
+            --blue-dark:    #0a3d5c;
+            --blue-light:   #e0f2fe;
+            --red:          #c0392b;
+            --text:         #0f172a;
+            --muted:        #64748b;
+            --border:       #e2e8f0;
+            --success:      #16a34a;
+            --success-bg:   #dcfce7;
+            --danger:       #dc2626;
+            --danger-bg:    #fee2e2;
+            --warn:         #d97706;
+            --warn-bg:      #fef3c7;
+            --mono:         'JetBrains Mono', monospace;
+            --radius:       10px;
+        }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        /* TOPBAR */
+        .topbar {
+            background: linear-gradient(120deg, #071e2e 0%, #0a3d5c 45%, #0c5a80 100%);
+            padding: 0 28px; display: flex; align-items: center; justify-content: space-between;
+            height: 52px; position: sticky; top: 0; z-index: 100;
+        }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-bracket { font-family: var(--mono); font-size: 18px; color: #5bbde8; font-weight: 500; }
+        .logo-name { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: 0.08em; }
+        .logo-version { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,0.35); margin-left: 3px; }
+        .nav-top { display: flex; gap: 3px; }
+        .nav-item {
+            padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 500;
+            color: rgba(255,255,255,0.55); text-decoration: none; transition: all 0.15s;
+        }
+        .nav-item:hover { color: #fff; background: rgba(255,255,255,0.1); }
+        .nav-item.active { background: rgba(255,255,255,0.15); color: #fff; }
+        .nav-item.new { background: rgba(255,255,255,0.07); color: #90cff0; border: 1px solid rgba(255,255,255,0.12); }
+        .nav-item.new:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+        /* HERO */
+        .hero {
+            background: linear-gradient(100deg, #041420 0%, #071e2e 50%, #0a3d5c 100%);
+            padding: 22px 28px; display: flex; align-items: center; justify-content: space-between;
+        }
+        .hero-title { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+        .hero-sub { font-family: var(--mono); font-size: 10px; color: #5bbde8; margin-top: 3px; }
+        .hero-stats { display: flex; gap: 28px; }
+        .hero-stat-val { font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -0.03em; }
+        .hero-stat-lbl { font-size: 9px; color: #5bbde8; font-family: var(--mono); text-transform: uppercase; letter-spacing: 0.1em; }
+
+        /* CONTENT */
+        .content { padding: 24px 28px; display: flex; flex-direction: column; gap: 22px; max-width: 1200px; }
+        .section-title { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--muted); font-weight: 600; font-family: var(--mono); margin-bottom: 14px; }
+
+        /* CARDS */
+        .card {
+            background: var(--white); border-radius: var(--radius);
+            border: 1px solid var(--border); padding: 18px;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(10,61,92,0.09); }
+        .card-accent { height: 3px; border-radius: 2px; margin-bottom: 12px; }
+        .card-accent.on   { background: linear-gradient(90deg, #16a34a, #4ade80); }
+        .card-accent.off  { background: linear-gradient(90deg, #dc2626, #f87171); }
+        .card-accent.warn { background: linear-gradient(90deg, #d97706, #fbbf24); }
+        .card-accent.blue { background: linear-gradient(90deg, #0a3d5c, #0369a1); }
+
+        /* GRIDS */
+        .grid-machines { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 14px; }
+        .grid-emp      { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 14px; }
+        .grid-2col     { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+        /* BADGES */
+        .badge         { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 600; font-family: var(--mono); }
+        .badge-success { background: var(--success-bg); color: var(--success); }
+        .badge-muted   { background: #f1f5f9; color: var(--muted); }
+        .badge-on      { background: var(--success-bg); color: var(--success); }
+        .badge-off     { background: var(--danger-bg);  color: var(--danger);  }
+        .badge-warn    { background: var(--warn-bg);    color: var(--warn);    }
+        .badge-blue    { background: var(--blue-light); color: var(--blue); }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 500;
+            font-family: 'Inter', sans-serif; text-decoration: none; border: none; cursor: pointer;
+            transition: opacity 0.15s, transform 0.1s;
+        }
+        .btn:hover { opacity: 0.85; }
+        .btn:active { transform: scale(0.97); }
+        .btn-primary { background: linear-gradient(135deg, #0a3d5c, #0369a1); color: #fff; }
+        .btn-ghost   { background: #f1f5f9; color: var(--text); border: 1px solid var(--border); }
+        .btn-danger  { background: var(--danger-bg); color: var(--danger); border: none; }
+        .btn-sm      { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+
+        /* META */
+        .meta-row { display: flex; justify-content: space-between; font-size: 11px; padding: 5px 0; border-bottom: 1px solid var(--border); }
+        .meta-row:last-child { border-bottom: none; }
+        .meta-key { color: var(--muted); }
+        .meta-val { font-family: var(--mono); font-weight: 500; }
+
+        /* AVATAR */
+        .avatar {
+            width: 42px; height: 42px; border-radius: 10px;
+            background: linear-gradient(135deg, #7f1d1d, #c0392b);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0;
+        }
+
+        /* FORMS */
+        .form-wrap { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); padding: 26px; max-width: 480px; }
+        .form-group { margin-bottom: 18px; }
+        .form-label { display: block; font-size: 10px; font-weight: 600; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.08em; font-family: var(--mono); }
+        .form-input {
+            width: 100%; padding: 10px 12px; background: var(--bg);
+            border: 1.5px solid var(--border); border-radius: 8px; color: var(--text);
+            font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        .form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(3,105,161,0.1); }
+        .form-select {
+            width: 100%; padding: 10px 12px; background: var(--bg);
+            border: 1.5px solid var(--border); border-radius: 8px; color: var(--text);
+            font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
+            transition: border-color 0.15s;
+        }
+        .form-select:focus { border-color: var(--blue); }
+        .form-hint { font-size: 10px; color: var(--muted); margin-top: 4px; font-family: var(--mono); }
+
+        /* ALERT */
+        .alert-success {
+            background: var(--success-bg); color: var(--success);
+            padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+            border: 1px solid rgba(22,163,74,0.2); margin-bottom: 18px;
+        }
+
+        /* EMPTY */
+        .empty { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 13px; }
+
+        /* ACTIONS */
+        .actions { display: flex; gap: 6px; align-items: center; }
+
+        /* PAGE HEADER */
+        .page-header { margin-bottom: 20px; }
+        .page-header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+        .page-header p { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    </style>
+    {% block extra_style %}{% endblock %}
+</head>
+<body>
+    <header class="topbar">
+        <a href="/" class="logo">
+            <span class="logo-bracket">[G]</span>
+            <span class="logo-name">GRABBER</span>
+            <span class="logo-version">v0.0.3</span>
+        </a>
+        <nav class="nav-top">
+            <a href="/ordis"           class="nav-item {% if active == 'ordis' %}active{% endif %}">Ordinateurs</a>
+            <a href="/employees"       class="nav-item {% if active == 'employees' %}active{% endif %}">Employés</a>
+            <a href="/employee/create" class="nav-item new {% if active == 'create' %}active{% endif %}">+ Nouvel employé</a>
+        </nav>
+    </header>
+    {% block hero %}{% endblock %}
+    <div class="content">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

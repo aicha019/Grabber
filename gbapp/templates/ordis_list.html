@@ -1,71 +1,50 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Liste des ordinateurs</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 0 20px;
-            background-color: #f5f5f5;
-        }
-        h1 { color: #333; }
-        table {
-            width: 100%;
-            background: white;
-            border-collapse: collapse;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th { background-color: #4CAF50; color: white; }
-        tr:hover { background-color: #f5f5f5; }
-        .btn {
-            padding: 6px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 14px;
-            color: white;
-        }
-        .btn-view { background-color: #2196F3; }
-        .btn-delete { background-color: #f44336; }
-    </style>
-</head>
-<body>
-    <h1>Liste des ordinateurs</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Hostname</th>
-                <th>OS</th>
-                <th>IP</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for ordi in ordis %}
-            <tr>
-                <td>{{ ordi.id }}</td>
-                <td>{{ ordi.hostname }}</td>
-                <td>{{ ordi.os }}</td>
-                <td>{{ ordi.ipv4 }}</td>
-                <td>
-                    <a href="/ordi/{{ ordi.id }}" class="btn btn-view">Voir</a>
-                    <a href="/ordi/{{ ordi.id }}/delete" class="btn btn-delete">Supprimer</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% extends "base.html" %}
+{% set active = "ordis" %}
+{% block title %}Ordinateurs — Grabber{% endblock %}
 
+{% block hero %}
+<div class="hero">
+    <div>
+        <div class="hero-title">Ordinateurs</div>
+        <div class="hero-sub">{{ ordis|length }} machine(s) enregistrée(s)</div>
+    </div>
+    <div class="hero-stats">
+        <div class="hero-stat">
+            <div class="hero-stat-val">{{ ordis|length }}</div>
+            <div class="hero-stat-lbl">machines</div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="section-title">// ordinateurs enregistrés</div>
+
+{% if ordis %}
+<div class="grid-machines">
+    {% for ordi in ordis %}
+    <div class="card">
+        <div class="card-accent on"></div>
+        <div style="font-size:15px; font-weight:600; margin-bottom:3px;">{{ ordi.hostname }}</div>
+        <div style="font-family:var(--mono); font-size:9px; color:var(--muted); margin-bottom:12px;">{{ ordi.os or '—' }} · {{ ordi.arch or '—' }}</div>
+        <div class="meta-row"><span class="meta-key">CPU</span><span class="meta-val">{{ ordi.cpu or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">RAM</span><span class="meta-val">{{ ordi.ram_size or '—' }} {{ ordi.ram_gen or '' }}</span></div>
+        <div class="meta-row"><span class="meta-key">IPv4</span><span class="meta-val" style="color:var(--blue);">{{ ordi.ipv4 or '—' }}</span></div>
+        <div class="meta-row"><span class="meta-key">MAC</span><span class="meta-val">{{ ordi.mac_adress or '—' }}</span></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding-top:12px; border-top:1px solid var(--border);">
+            <span class="badge badge-on">online</span>
+            <div class="actions">
+                <a href="/ordi/{{ ordi.id }}" class="btn btn-ghost btn-sm">Détails →</a>
+                <a href="/ordi/{{ ordi.id }}/delete" class="btn btn-danger btn-sm">Suppr.</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty">
+    <p>Aucun ordinateur enregistré.</p>
+    <p style="font-size:11px; margin-top:6px; font-family:var(--mono);">Lancez grabber.sh pour ajouter une machine.</p>
+</div>
+{% endif %}
+{% endblock %}
