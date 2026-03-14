@@ -65,11 +65,12 @@ async def submit_employee_form(request: Request, data: Annotated[EmployeeForm, F
 async def list_employees(request: Request):
     with Session(engine) as session:
         employees = session.exec(select(Employee)).all()
+        for employee in employees:
+            _ = employee.ordinateurs
     return templates.TemplateResponse(
         "employees_list.html",
         {"request": request, "employees": employees}
     )
-
 
 # ===================== EMPLOYEE EDIT =====================
 @app.get("/employee/{employee_id}/edit", response_class=HTMLResponse)
@@ -134,9 +135,10 @@ async def get_ordi_info(request: Request, ordi_id: int):
         if not ordi:
             raise HTTPException(status_code=404, detail="Ordinateur introuvable")
         partitions = session.exec(select(Partition).where(Partition.ordi_id == ordi_id)).all()
+        employees = session.exec(select(Employee).join(EmployeeOrdi).where(EmployeeOrdi.ordi_id == ordi_id)).all()
     return templates.TemplateResponse(
         "ordi.html",
-        {"request": request, "ordi": ordi, "partitions": partitions}
+        {"request": request, "ordi": ordi, "partitions": partitions, "employees": employees}
     )
 
 
@@ -153,6 +155,12 @@ async def delete_ordi(ordi_id: int):
         session.delete(ordi)
         session.commit()
     return {"status": "deleted"}
+
+
+# ===================== LOGO GRABBER =====================
+@app.get("/", response_class=RedirectResponse)
+async def home():
+    return RedirectResponse("/ordis")
 
 
 # ===================== ENDPOINT POUR LE GRABBER =====================
