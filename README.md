@@ -2,7 +2,6 @@
 
 **Auteur :** Aïcha Fofana  
 **Contact :** aichafofana019@gmail.com  
-**Étudiante en DSP DevOps – CNAM**
 
 ---
 
